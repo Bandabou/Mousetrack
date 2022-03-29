@@ -38,7 +38,9 @@ import os
 import json
 
 
-#checking push GITTTTT
+#check check double check GIT
+#adding lines
+git_check = "check"
 ## Initiate some global variables
 #This part combines all stimuli pairs in a list, with each option appearing left and right once, and randomizes them. Input the names of the images without the image extention here.
 saveData = {}
