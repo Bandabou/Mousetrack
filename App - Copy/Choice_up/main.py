@@ -45,10 +45,12 @@ import json
 #This part combines all stimuli pairs in a list, with each option appearing left and right once, and randomizes them. Input the names of the images without the image extention here.
 saveData = {}
 
+im_map = ["sushi", "chips", "banana", "pear", "raddish", "paprika", "donuts", "chocalate", "fries", "dark chocalate", "pizza", "strawberry"]
+
 path = "..\\Rating\\Data\\"
 os.chdir(path)
 with open("current_stim.json") as json_data:
-	df = json.load(json_data)
+	df = json.load(json_data) #https://jsonformatter.org/ to view data
 stimComb = df["up"]
 
 print(len(stimComb))
@@ -100,7 +102,7 @@ class Logout(Screen, FloatLayout, App):
 	def on_press(self, instance):
 		self.leave_time = str(datetime.now().time())
 		saveData["logout"] = {"leave_time":self.leave_time}
-		with open("Data\\p"+login.username.text+"_choice_up.json", 'w') as f: # modify according to your local path
+		with open("\\Data\\p"+login.username.text+"_choice_up.json", 'w') as f: # modify according to your local path
 			json.dump(saveData, f)
 		App.get_running_app().stop()
 
@@ -358,6 +360,7 @@ class DragObj(DragBehavior, Cursor):
 				self.end = True
 		if self.end == True:
 				self.leave_time = str(datetime.now().time())
+				if self.stim1.isdigit(): print(im_map[int(self.response)])
 				saveData[self.name] = {"stim":(self.stim1+self.stim2), "coor":self.coor, "time":self.timestamp, "coor2":self.coor2, "time2":self.timestamp2, "events":self.events, "resp":self.response, "leave_time":self.leave_time}
 				if self.name == "trial_up_"+str((len(stimComb)-1)):
 						App.get_running_app().root.current = "count_down"
@@ -513,7 +516,6 @@ recommendation_trial.dragObj.getStim("practice1", "practice2")
 class MouseTrackApp(App):
 	def build(self):
 		ScreenM = ScreenManager(transition=WipeTransition())
-		
 		ScreenM.add_widget(login)
 		ScreenM.add_widget(instruction_general)
 		ScreenM.add_widget(recommendation_trial)
