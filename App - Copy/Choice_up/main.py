@@ -45,7 +45,7 @@ import json
 #This part combines all stimuli pairs in a list, with each option appearing left and right once, and randomizes them. Input the names of the images without the image extention here.
 saveData = {}
 
-im_map = ["sushi", "chips", "banana", "pear", "raddish", "paprika", "donuts", "chocalate", "fries", "dark chocalate", "pizza", "strawberry"]
+im_map = ["sushi", "chips", "bananas", "pear", "radish", "paprika", "donuts", "Mars", "fries", "Kinder Bueno"] #practice: "pizza", "strawberries"]
 
 path = "..\\Rating\\Data\\"
 os.chdir(path)
@@ -360,8 +360,10 @@ class DragObj(DragBehavior, Cursor):
 				self.end = True
 		if self.end == True:
 				self.leave_time = str(datetime.now().time())
-				if self.stim1.isdigit(): print(im_map[int(self.response)])
-				saveData[self.name] = {"stim":(self.stim1+self.stim2), "coor":self.coor, "time":self.timestamp, "coor2":self.coor2, "time2":self.timestamp2, "events":self.events, "resp":self.response, "leave_time":self.leave_time}
+
+				if self.stim1.isdigit(): saveData[self.name] = {"stim":(self.stim1+self.stim2), "coor":self.coor, "time":self.timestamp, "coor2":self.coor2, "time2":self.timestamp2, "events":self.events, "resp":self.response, "leave_time":self.leave_time, "resp_name":im_map[int(self.response)]}
+				else: saveData[self.name] = {"stim":(self.stim1+self.stim2), "coor":self.coor, "time":self.timestamp, "coor2":self.coor2, "time2":self.timestamp2, "events":self.events, "resp":self.response, "leave_time":self.leave_time}
+				
 				if self.name == "trial_up_"+str((len(stimComb)-1)):
 						App.get_running_app().root.current = "count_down"
 				elif self.name == "practice_trial":
