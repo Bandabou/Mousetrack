@@ -43,7 +43,8 @@ import json
 #This part combines all stimuli pairs in a list, with each option appearing left and right once, and randomizes them. Input the names of the images without the image extention here.
 saveData = {}
 
-path = "C:\\Users\\maxhi\\OneDrive\\Desktop\\Mousetrack\App - Copy\\Rating\\Data"
+path = "C:\\Users\\20173771\\Documents\\GitHub\\Mousetrack\App - Copy\\Rating\\Data"
+#C:\\Users\\maxhi\\OneDrive\\Desktop
 os.chdir(path)
 with open("current_stim.json") as json_data:
 	df = json.load(json_data)
@@ -136,7 +137,7 @@ class InstructionGeneral(Screen, FloatLayout):
 		App.get_running_app().root.current = "practice_trial"
 				
 # define the instruction texts
-ins_general = "In this block, you are going to complete 50 food choice trials. In each trial,\n"\
+ins_general = "In this block, you are going to complete 45 food choice trials. In each trial,\n"\
 			"you will be presented with two food images on the top left and top right\n"\
 			"corners of the screen. Your task is to move the blue cursor at the bottom\n"\
 			"of the screen to the food item you prefer. The food items will only appear\n"\
@@ -201,8 +202,10 @@ class rec_instruction(Screen, FloatLayout):
 
 
 
-label2_rec_in = "The next few trials contain a recommendation\n"\
-				"The recommendation is based on a person's average diet"
+label2_rec_in = "You've completed the first block of trials\n"\
+				"You can take a break for a minute\n"\
+				"The next 90 trials contain a recommendation for one of the items\n"\
+				"The recommendations are based on a person's average diet"
 
 			
 
@@ -233,8 +236,10 @@ class cursor_instruct(Screen, FloatLayout):
 
 
 
-label3_rec_in = "The next few trials contain a recommendation\n"\
-				"The recommendation is based on a the shift in cursor position"
+label3_rec_in = "You've completed the first block of trials\n"\
+				"You can take a break for a minute\n"\
+				"The next 90 trials contain a recommendation for one of the food items\n"\
+				"The cursor will be positioned below the item that is recommended"
 
 			
 
