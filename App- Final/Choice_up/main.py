@@ -43,15 +43,22 @@ import json
 #This part combines all stimuli pairs in a list, with each option appearing left and right once, and randomizes them. Input the names of the images without the image extention here.
 saveData = {}
 
-path = "C:\\Users\\maxhi\\OneDrive\\Desktop\\Mousetrack\App - Copy\\Rating\\Data"
+path = "C:\\Users\\20183382\\Desktop\\gitmouse\\Mousetrack\\App- Working\\Rating\\Data\\"
 os.chdir(path)
 with open("current_stim.json") as json_data:
 	df = json.load(json_data)
-stimComb = df["up"]
+stimComb = df["up"] 
+#stim comb,15= 1+5 = patato + paprika
 print(stimComb)
 stimComb4 = df["down"]
-print(stimComb4)
+#print(stimComb4)
 #test list to make testing more efficient
+stimCon = []
+stimRec = []
+stimCur = []
+#for i in range(10):
+#	stimRec
+	
 stimComb2 = ['15', '90', '92']
 #print(len(stimComb))
 
@@ -102,7 +109,7 @@ class Logout(Screen, FloatLayout, App):
 	def on_press(self, instance):
 		self.leave_time = str(datetime.now().time())
 		saveData["logout"] = {"leave_time":self.leave_time}
-		with open("C:\\Users\\maxhi\\OneDrive\\Desktop\\Mousetrack\\App - Copy\\Choice_up\\Data\\p"+login.username.text+"_choice_up.json", 'w') as f: # modify according to your local path
+		with open("C:\Users\\20183382\\Desktop\\gitmouse\\Mousetrack\\App- Working\\Choice_up\\Data\\p"+login.username.text+"_choice_up.json", 'w') as f: # modify according to your local path
 			json.dump(saveData, f)
 		App.get_running_app().stop()
 
@@ -205,9 +212,10 @@ class rec_instruction(Screen, FloatLayout):
 
 
 
-label2_rec_in = "The next few trials contain a recommendation\n"\
-				"The recommendation is based on a person's average diet"
-
+label2_rec_in = "You've completed the first block of trials\n"\
+				"You can take a break for a minute\n"\
+				"The next 90 trials contain a recommendation for one of the items\n"\
+				"The recommendations are based on a person's average diet"
 			
 
 
@@ -237,8 +245,10 @@ class cursor_instruct(Screen, FloatLayout):
 
 
 
-label3_rec_in = "The next few trials contain a recommendation\n"\
-				"The recommendation is based on a the shift in cursor position"
+label3_rec_in = "You've completed the first block of trials\n"\
+				"You can take a break for a minute\n"\
+				"The next 90 trials contain a recommendation for one of the food items\n"\
+				"The cursor will be positioned below the item that is recommended"
 
 			
 
@@ -408,7 +418,7 @@ class DragObj(DragBehavior, Cursor):
 				
 				elif self.name == "control_trial":
 						App.get_running_app().root.current = "rec_instruct"
-						print('control check')
+						#print('control check')
 					    
 				else:
 						App.get_running_app().root.current = "trial_up_" + str(int(self.name[9:])+1)
@@ -964,7 +974,7 @@ class MouseTrackApp(App):
 				screen_trial[i].dragObj.getStim(stimComb2[i][0], stimComb2[i][1])
 				ScreenM.add_widget(screen_trial[i])
 			#	
-			#print(screen_trial)
+			print(chooser)
 
 		
 		
