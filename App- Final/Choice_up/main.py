@@ -53,9 +53,9 @@ print(stimComb)
 stimComb4 = df["down"]
 #print(stimComb4)
 #test list to make testing more efficient
-stimCon = []
-stimRec = []
-stimCur = []
+stimComb_control = []
+stimComb_rec = []
+stimComb_cur = []
 #for i in range(10):
 #	stimRec
 	
