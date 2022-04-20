@@ -92,7 +92,7 @@ class Logout(Screen, FloatLayout, App):
 	def on_press(self, instance):
 		self.leave_time = str(datetime.now().time())
 		saveData["logout"] = {"leave_time":self.leave_time}
-		with open("C:\\Users\\20183382\\Desktop\\mouse\\Mousetrack\\App- Final\\Rating\\Data\\p"+login.username.text+"_rating.json", 'w') as f: # modify according to your local path
+		with open("C:\\Users\\20183382\\Desktop\\mouse\\Mousetrack\\TheApp\\Rating\\Data\\p"+login.username.text+"_rating.json", 'w') as f: # modify according to your local path
 			json.dump(saveData, f)
 		# randomly distribute food pairs to the 4 conditions (top/down, right/left share the 90 pairs)
 		
@@ -142,7 +142,7 @@ class Logout(Screen, FloatLayout, App):
 		print(len(saveStimi))
 
 				
-		with open("C:\\Users\\20183382\\Desktop\\mouse\\Mousetrack\\App- Final\\Rating\\Data\\current_stim.json", 'w') as f: # modify according to your local path
+		with open("C:\\Users\\20183382\\Desktop\\mouse\\Mousetrack\\TheApp\\Rating\\Data\\current_stim.json", 'w') as f: # modify according to your local path
 			json.dump(saveStimi, f)
 		App.get_running_app().stop()
 
