@@ -1,0 +1,35 @@
+Up: 
+self.pos = (Window.width/2-self.width/2), (Window.height/8-self.height/2)
+		self.stim1 = Image(pos_hint={"left":0, "top":1}, size_hint=(0.24, 0.3792), source='')
+		#right stim
+		self.stim2 = Image(pos_hint={"right":1, "top":1}, size_hint=(0.24, 0.3792), source='')
+		self.black1 = Image(pos_hint={"left":0, "top":1}, size_hint=(0.24, 0.3792), source='./black.png')
+		self.black2 = Image(pos_hint={"right":1, "top":1}, size_hint=(0.24, 0.3792), source='./black.png')
+
+
+Down:
+self.pos = (Window.width/2-self.width/2), (Window.height*0.875-self.height/2)
+self.stim1 = Image(pos_hint=({"left":0, "bottom":1}), size_hint=(1, 0.319), source='')
+		#right stim
+		self.stim2 = Image(pos_hint={"right":1, "bottom":1}, size_hint=(0.3, 0.319), source='')
+		self.black1 = Image(pos_hint={"left":0, "bottom":1}, size_hint=(0.3, 0.53), source='./black.png')
+		self.black2 = Image(pos_hint={"right":1, "bottom":1}, size_hint=(0.3, 0.53), source='./black.png')
+
+Right:
+self.pos = (Window.width/8-self.width/2), (Window.height/2-self.height/2)
+
+self.stim1 = Image(pos_hint=({"right":1, "top":1}), size_hint=(0.3, 0.319), source='')
+		#right stim
+		self.stim2 = Image(pos_hint={"right":1, "bottom":1}, size_hint=(0.3, 0.319), source='')
+		self.black1 = Image(pos_hint={"right":1, "top":1}, size_hint=(0.3, 0.53), source='./black.png')
+		self.black2 = Image(pos_hint={"right":1, "bottom":1}, size_hint=(0.3, 0.53), source='./black.png')
+
+
+Left:
+self.pos = (Window.width*0.875-self.width/2), (Window.height/2-self.height/2)
+
+self.stim1 = Image(pos_hint=({"left":0, "top":1}), size_hint=(0.3, 0.319), source='')
+		#right stim
+		self.stim2 = Image(pos_hint={"left":0, "bottom":1}, size_hint=(0.3, 0.319), source='')
+		self.black1 = Image(pos_hint={"left":0, "top":1}, size_hint=(0.3, 0.53), source='./black.png')
+		self.black2 = Image(pos_hint={"left":0, "bottom":1}, size_hint=(0.3, 0.53), source='./black.png')
