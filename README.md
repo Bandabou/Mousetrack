@@ -1,5 +1,5 @@
 # Mousetrack
-Mouse tracking app with [python 2.7.18](https://www.python.org/downloads/release/python-2718/) and [kivi](https://kivy.org/doc/stable/gettingstarted/installation.html#install-pip).
+Mouse tracking app with [python 2.7.18](https://www.python.org/downloads/release/python-2718/) and [kivi](https://kivy.org/doc/stable/gettingstarted/installation.html#install-pip). TheApp folder contains the latest version.
 
 ## Final data
 To check final data paste it in [JSON formatter](https://jsonformatter.org/). Or check [jsonformatter.txt](jsonformatter.txt) for example.
@@ -10,3 +10,4 @@ To check final data paste it in [JSON formatter](https://jsonformatter.org/). Or
 ## Todo
 * save: response_name, recommendation, trial_type(control, text, position)
 * Chao: data parse script
+* add Cao and Arkady
