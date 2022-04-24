@@ -9,4 +9,4 @@ To check final data paste it in [JSON formatter](https://jsonformatter.org/). Or
 
 ## Todo
 * save: response_name, recommendation, trial_type(control, text, position)
-* Chao: data interpret script
+* Chao: data parse script
