@@ -88,7 +88,7 @@ class Login(Screen, FloatLayout):
 		if len(self.username.text) == 2 and self.username.text.isdigit() == True:
 				self.leave_time = str(datetime.now().time())
 				saveData["login"] = {"ppn":self.username.text, "leave_time": self.leave_time}
-				App.get_running_app().root.current = "instruction_general"
+				App.get_running_app().root.current = "rec_instruct"
 		else:
 				popup_username.open()
 
@@ -918,8 +918,8 @@ class MouseTrack_rec(Screen, FloatLayout):
 		self.black2 = Image(pos_hint={"right":1, "top":1}, size_hint=(0.18, 0.315), source='./black.png')
 
 		#add the recommendation in text
-		self.label2 = Label(text="", size_hint=(0.5, 0.2), pos_hint={"right":0.75, "top":0.9}, font_size=sp(14), color=(1,1,1,1), halign="center")
-		self.black3 = Image(pos_hint={"right":0.75, "top":1}, size_hint=(0.5, 0.45), source='./black.png')
+		self.label2 = Label(text="", size_hint=(0.5, 0.2), pos_hint={"right":0.75, "top":0.9}, font_size=sp(18), color=(1,1,1,1), halign="center")
+		self.black3 = Image(pos_hint={"right":1.1, "top":1.3}, size_hint=(1.2, 0.6), source='./black.png')
 		self.getrecommend()
 
 
@@ -1116,6 +1116,7 @@ cursor_trial.dragObj.getStim("practice1", "practice2")
 
 
 
+
 #---------------------------
 ## Build the app
 #---------------------------
@@ -1124,13 +1125,7 @@ class MouseTrackApp(App):
 		ScreenM = ScreenManager(transition=WipeTransition())
 		
 		ScreenM.add_widget(login)
-		ScreenM.add_widget(instruction_general)
 		
-		ScreenM.add_widget(practice_trial)
-		
-		ScreenM.add_widget(instruction_trial)
-
-		#ScreenM.add_widget(control_trial)
 		
 		ScreenM.add_widget(rec_instruct)
 
@@ -1141,13 +1136,7 @@ class MouseTrackApp(App):
 		screen_trial = []
 
 		#test list for easy of testing
-		screen_control = []
-		for i in range(len(stimComb_base)):
-			screen_control.append(MouseTrack_base(name="trial_Baseline_"+str(i)))
-			screen_control[i].getStim(stimComb_base[i][0], stimComb_base[i][1])
-			screen_control[i].dragObj.getStim(stimComb_base[i][0], stimComb_base[i][1])
-			ScreenM.add_widget(screen_control[i])
-			print("base_trial")
+		
 		
 		
 		screen_rec = []
@@ -1173,21 +1162,7 @@ class MouseTrackApp(App):
 
 		
 		
-		for i in range(len(stimComb_cur)):
-			chooser = random.choice(["cursor", "control_cur"])
-			if chooser == "control_cur":	
-				screen_rec.append(MouseTrack_control(name="trial_Cursor_"+str(i)))
-				screen_rec[i].getStim(stimComb_cur[i][0], stimComb_cur[i][1])
-				screen_rec[i].dragObj.getStim(stimComb_cur[i][0], stimComb_cur[i][1])
-				ScreenM.add_widget(screen_rec[i])
-			elif chooser =="cursor":
-				screen_rec.append(MouseTrack_curs(name="trial_Cursor_"+str(i)))
-				screen_rec[i].getStim(stimComb_cur[i][0], stimComb_cur[i][1])
-				screen_rec[i].dragObj.getStim(stimComb_cur[i][0], stimComb_cur[i][1])
-				ScreenM.add_widget(screen_rec[i])
-			print(chooser)
 		
-		ScreenM.add_widget(countDown)
 		ScreenM.add_widget(logout)
 		return ScreenM
 

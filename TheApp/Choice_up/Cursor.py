@@ -88,7 +88,7 @@ class Login(Screen, FloatLayout):
 		if len(self.username.text) == 2 and self.username.text.isdigit() == True:
 				self.leave_time = str(datetime.now().time())
 				saveData["login"] = {"ppn":self.username.text, "leave_time": self.leave_time}
-				App.get_running_app().root.current = "instruction_general"
+				App.get_running_app().root.current = "cursor_ins"
 		else:
 				popup_username.open()
 
@@ -1124,17 +1124,6 @@ class MouseTrackApp(App):
 		ScreenM = ScreenManager(transition=WipeTransition())
 		
 		ScreenM.add_widget(login)
-		ScreenM.add_widget(instruction_general)
-		
-		ScreenM.add_widget(practice_trial)
-		
-		ScreenM.add_widget(instruction_trial)
-
-		#ScreenM.add_widget(control_trial)
-		
-		ScreenM.add_widget(rec_instruct)
-
-		ScreenM.add_widget(recommendation_trial)
 
 		ScreenM.add_widget(cursor_ins)
 		# screens of real trials in block 1
@@ -1142,12 +1131,7 @@ class MouseTrackApp(App):
 
 		#test list for easy of testing
 		screen_control = []
-		for i in range(len(stimComb_base)):
-			screen_control.append(MouseTrack_base(name="trial_Baseline_"+str(i)))
-			screen_control[i].getStim(stimComb_base[i][0], stimComb_base[i][1])
-			screen_control[i].dragObj.getStim(stimComb_base[i][0], stimComb_base[i][1])
-			ScreenM.add_widget(screen_control[i])
-			print("base_trial")
+		
 		
 		
 		screen_rec = []
@@ -1156,20 +1140,6 @@ class MouseTrackApp(App):
 		ranger = len(stimComb_rec)	
 		correct_range = (ranger - 1)
 		
-		for i in range(ranger):	
-			chooser = random.choice(["recommendation", "control"])
-			if chooser == "control":	
-				screen_trial.append(MouseTrack(name="trial_Recommendation_"+str(i)))
-				screen_trial[i].getStim(stimComb_rec[i][0], stimComb_rec[i][1])
-				screen_trial[i].dragObj.getStim(stimComb_rec[i][0], stimComb_rec[i][1])
-				ScreenM.add_widget(screen_trial[i])
-			elif chooser =="recommendation":
-				screen_trial.append(MouseTrack_rec(name="trial_Recommendation_"+str(i)))
-				screen_trial[i].getStim(stimComb_rec[i][0], stimComb_rec[i][1])
-				screen_trial[i].dragObj.getStim(stimComb_rec[i][0], stimComb_rec[i][1])
-				ScreenM.add_widget(screen_trial[i])
-			#	
-			print(chooser)
 
 		
 		

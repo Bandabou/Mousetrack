@@ -92,7 +92,7 @@ class Logout(Screen, FloatLayout, App):
 	def on_press(self, instance):
 		self.leave_time = str(datetime.now().time())
 		saveData["logout"] = {"leave_time":self.leave_time}
-		with open("C:\\Users\\20183382\\Desktop\\mouse\\Mousetrack\\TheApp\\Rating\\Data\\p"+login.username.text+"_rating.json", 'w') as f: # modify according to your local path
+		with open("C:\\Users\\maxhi\\OneDrive\\Desktop\\Good_mouse\\Mousetrack\\TheApp\\Rating\\Data\\p"+login.username.text+"_rating.json", 'w') as f: # modify according to your local path
 			json.dump(saveData, f)
 		# randomly distribute food pairs to the 4 conditions (top/down, right/left share the 90 pairs)
 		
@@ -131,10 +131,10 @@ class Logout(Screen, FloatLayout, App):
 		
 
 		shuffle(stimComb)
-		saveStimi["Baseline"] = stimComb[0:50]
-		saveStimi["Recommendation"] = stimComb[50:140]
+		saveStimi["Baseline"] = stimComb[0:45]
+		saveStimi["Recommendation"] = stimComb[45:135]
 		shuffle(stimComb)
-		saveStimi["Cursor"] = stimComb[140:230]
+		saveStimi["Cursor"] = stimComb[135:225]
 				
 		print(stimComb)
 		print(len(stimComb))
@@ -142,7 +142,7 @@ class Logout(Screen, FloatLayout, App):
 		print(len(saveStimi))
 
 				
-		with open("C:\\Users\\20183382\\Desktop\\mouse\\Mousetrack\\TheApp\\Rating\\Data\\current_stim.json", 'w') as f: # modify according to your local path
+		with open("C:\\Users\\maxhi\\OneDrive\\Desktop\\Good_mouse\\Mousetrack\\TheApp\\Rating\\Data\\current_stim.json", 'w') as f: # modify according to your local path
 			json.dump(saveStimi, f)
 		App.get_running_app().stop()
 
