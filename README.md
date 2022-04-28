@@ -13,6 +13,7 @@ To check final data paste it in [JSON formatter](https://jsonformatter.org/). Or
 * add Cao and Arkady
 
 
+pip install kivy==1.11.1 
 ## Code textprovider error fix
 ```
 pip install --upgrade pip wheel setuptools
