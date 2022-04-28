@@ -22,3 +22,4 @@ pip install kivy-deps.gstreamer
 pip install kivy-deps.angle 
 pip install –-upgrade kivy
 ```
+C:\Users\participant\Desktop\Mousetrack-main\TheApp\Choice_up\Data
