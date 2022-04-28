@@ -11,3 +11,11 @@ To check final data paste it in [JSON formatter](https://jsonformatter.org/). Or
 * save: response_name, recommendation, trial_type(control, text, position)
 * Chao: data parse script
 * add Cao and Arkady
+
+
+##Code textprovider error fix
+pip install --upgrade pip wheel setuptools
+pip install docutils pygments pypiwin32 kivy-deps.sdl2 kivy-deps.glew 
+pip install kivy-deps.gstreamer 
+pip install kivy-deps.angle 
+pip install –-upgrade kivy
