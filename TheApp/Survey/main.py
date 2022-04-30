@@ -90,7 +90,8 @@ class Logout(Screen, FloatLayout, App):
 	def on_press(self, instance):
 		self.leave_time = str(datetime.now().time())
 		saveData["logout"] = {"leave_time":self.leave_time}
-		with open("C:\\Users\\maxhi\\OneDrive\\Desktop\\Good_mouse\\Mousetrack\\TheApp\\Survey\\Data\\p"+login.username.text+"_survey.json", 'w') as f: # modify according to your local path
+		#with open("C:\\Users\\participant\\Desktop\\Mousetrack-main\\TheApp\\Survey\\Data\\p"+login.username.text+"_survey.json", 'w') as f: # backup
+		with open("\\Data\\p"+login.username.text+"_survey.json", 'w') as f: # modify according to your local path
 			json.dump(saveData, f)
 		lastPage.getImage()
 		App.get_running_app().root.current = "lastPage"
@@ -118,7 +119,7 @@ class LastPage(Screen, FloatLayout):
 	def getImage(self):
 		food_list = []
 		for orientation in ["up", "down", "right", "left"]:
-			path = "C:\\Users\\maxhi\\OneDrive\\Desktop\\Good_mouse\\Mousetrack\\TheApp\\Choice_up\\Data\\"
+			path = "..\\Choice_up\\Data\\" # RELATIVEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEe
 			os.chdir(path)
 			with open("p"+login.username.text+"_choice_up.json") as json_data:
 				df = json.load(json_data)
@@ -126,7 +127,7 @@ class LastPage(Screen, FloatLayout):
 				if i.find("trial_"+orientation+"_") != -1:
 						if df[i]["resp"] != "8" and df[i]["resp"] != "t" and df[i]["resp"] != "c":
 								food_list.append(df[i]["resp"])
-		self.image.source = "C:\\Users\\maxhi\\OneDrive\\Desktop\\Good_mouse\\Mousetrack\\TheApp\\Choice_up\\images\\"+choice(food_list)+".jpg"
+		self.image.source = "..\\Choice_up\\images\\"+choice(food_list)+".jpg" # RELATIVEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEe
 
 lastPage = LastPage(name="lastPage")
 
