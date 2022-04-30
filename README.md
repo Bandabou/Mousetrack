@@ -7,11 +7,6 @@ To check final data paste it in [JSON formatter](https://jsonformatter.org/). Or
 ### infographic
 ![data_info](saveData_infographic.png)
 
-## Todo
-* save: response_name, recommendation, trial_type(control, text, position)
-* Chao: data parse script
-* add Cao and Arkady
-
 
 >pip install kivy==1.11.1
 ## Code textprovider error fix
