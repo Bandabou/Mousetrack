@@ -316,7 +316,12 @@ class DragObj(DragBehavior, Cursor):
 				self.end = True
 		if self.end == True:
 				self.leave_time = str(datetime.now().time())
-				saveData[self.name] = {"stim":(self.stim1+self.stim2), "coor":self.coor, "time":self.timestamp, "coor2":self.coor2, "time2":self.timestamp2, "events":self.events, "resp":self.response, "leave_time":self.leave_time}
+
+				if hasattr(self.parent.parent, 'recommendation'):
+						saveData[self.name] = {"stim":(self.stim1+self.stim2), "coor":self.coor, "time":self.timestamp, "coor2":self.coor2, "time2":self.timestamp2, "events":self.events, "resp":self.response, "leave_time":self.leave_time, "recommendation":self.parent.parent.recommendation}
+				else:
+						saveData[self.name] = {"stim":(self.stim1+self.stim2), "coor":self.coor, "time":self.timestamp, "coor2":self.coor2, "time2":self.timestamp2, "events":self.events, "resp":self.response, "leave_time":self.leave_time}
+                                        
 				if self.name == "trial_Recommendation_"+str((len(stimComb_rec)-1)):
 						
 						App.get_running_app().root.current = 'cursor_ins' 
@@ -457,6 +462,7 @@ class MouseTrack_rec(Screen, FloatLayout):
 		self.black2 = Image(pos_hint={"right":1, "top":1}, size_hint=(0.18, 0.315), source='./black.png')
 
 		#add the recommendation in text
+		self.recommendation = random.randint(0,1) #0=left, 1=right
 		self.label2 = Label(text="", size_hint=(0.5, 0.2), pos_hint={"right":0.75, "top":0.9}, font_size=sp(18), color=(1,1,1,1), halign="center")
 		self.black3 = Image(pos_hint={"right":1.1, "top":1.3}, size_hint=(1.2, 0.6), source='./black.png')
 		self.getrecommend()
@@ -487,7 +493,7 @@ class MouseTrack_rec(Screen, FloatLayout):
 	
 	#define a function to get the recommendation
 	def getrecommend(self):
-		self.label2.text = random.choice(rec_list)
+		self.label2.text = rec_list[self.recommendation]
 		pass
 
 	def update(self, instance):
