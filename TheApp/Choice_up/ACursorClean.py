@@ -240,13 +240,15 @@ class DragObj2(DragBehavior, Cursor):
 	def __init__(self, **kwargs):
 		super(DragObj2, self).__init__(**kwargs)
 
-		# position of dragobj
+                # position of dragobj
+		self.recommendation = random.randint(0,1) #0=left, 1=right
 		
-		if random.choice(["left", "right"]) == "right":
+		if self.recommendation == 1:
 			self.pos = (Window.width/7-self.width/2), (Window.height/8-self.height/2), #(true is right)
 			
 		else:
 			self.pos = (Window.width/1.18-self.width/2), (Window.height/8-self.height/2)  #false is left
+
 		# time of points on dragging trajectory 
 		self.timestamp = []
 		# events on dragging trajectory
@@ -286,7 +288,6 @@ class DragObj2(DragBehavior, Cursor):
 					#print(touch.spos)
 					self.coor2.append(((self.x+self.width/2)/Window.width, (self.y+self.height/2)/Window.height))
 				self.record = Clock.schedule_interval(getCoor, 0.01)
-				self.parent.parent.update(self)
 		return super(DragObj2, self).on_touch_down(touch)
 
 	def on_touch_move(self, touch):
@@ -294,6 +295,7 @@ class DragObj2(DragBehavior, Cursor):
 		self.timestamp.append(touch.time_update)
 		self.events.append("move")
 		self.coor.append(touch.spos)
+		if (self.y > 60): self.parent.parent.update(self)
 		return super(DragObj2, self).on_touch_move(touch)
 
 	#Save MT parameters once cursor is released on top of one of the choice options. 
@@ -380,7 +382,6 @@ class DragObj3(DragBehavior, Cursor):
 					#print(touch.spos)
 					self.coor2.append(((self.x+self.width/2)/Window.width, (self.y+self.height/2)/Window.height))
 				self.record = Clock.schedule_interval(getCoor, 0.01)
-				self.parent.parent.update(self)
 		return super(DragObj3, self).on_touch_down(touch)
 
 	def on_touch_move(self, touch):
@@ -388,6 +389,7 @@ class DragObj3(DragBehavior, Cursor):
 		self.timestamp.append(touch.time_update)
 		self.events.append("move")
 		self.coor.append(touch.spos)
+		if (self.y > 60): self.parent.parent.update(self)
 		return super(DragObj3, self).on_touch_move(touch)
 
 	#Save MT parameters once cursor is released on top of one of the choice options. 

@@ -289,7 +289,6 @@ class DragObj(DragBehavior, Cursor):
 					#print(touch.spos)
 					self.coor2.append(((self.x+self.width/2)/Window.width, (self.y+self.height/2)/Window.height))
 				self.record = Clock.schedule_interval(getCoor, 0.01)
-				self.parent.parent.update(self)
 		return super(DragObj, self).on_touch_down(touch)
 
 	def on_touch_move(self, touch):
@@ -297,6 +296,7 @@ class DragObj(DragBehavior, Cursor):
 		self.timestamp.append(touch.time_update)
 		self.events.append("move")
 		self.coor.append(touch.spos)
+		if (self.y > 60): self.parent.parent.update(self)
 		return super(DragObj, self).on_touch_move(touch)
 
 	#Save MT parameters once cursor is released on top of one of the choice options. 

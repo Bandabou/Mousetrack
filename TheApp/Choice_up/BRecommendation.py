@@ -345,7 +345,6 @@ class DragObj_base(DragBehavior, Cursor):
 	def __init__(self, **kwargs):
 		super(DragObj_base, self).__init__(**kwargs)
 
-		
 		# position of dragobj
 		self.pos = (Window.width/2-self.width/2), (Window.height/8-self.height/2)
 		# time of points on dragging trajectory 
@@ -482,6 +481,8 @@ class DragObj(DragBehavior, Cursor):
 		self.stim2 = stim2
 
 	def on_touch_down(self, touch):
+                
+		print(1)
 		if touch.spos[0]*Window.width >= self.x and touch.spos[0]*Window.width <= self.x+self.width and touch.spos[1]*Window.height >= self.y and touch.spos[1]*Window.height <= self.y+self.height:
 				self.timestamp.append(touch.time_update)
 				self.coor.append(touch.spos)
@@ -494,7 +495,6 @@ class DragObj(DragBehavior, Cursor):
 					self.coor2.append(((self.x+self.width/2)/Window.width, (self.y+self.height/2)/Window.height))
 				self.record = Clock.schedule_interval(getCoor, 0.01)
 				#self.parent.parent.update(self)
-				print(recommendation)
 		return super(DragObj, self).on_touch_down(touch)
 
 	def on_touch_move(self, touch):
