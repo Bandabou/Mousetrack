@@ -50,7 +50,7 @@ with open("current_stim.json") as json_data:
 #stimComb = df["up"] 
 #stim comb,15= 1+5 = patato + paprika
 #print(stimComb)
-print(df)
+
 
 #stimCombBase = df["baseline"]
 #print(stimCombBase)
@@ -298,7 +298,7 @@ class DragObj2(DragBehavior, Cursor):
 
 	#Save MT parameters once cursor is released on top of one of the choice options. 
 	def on_touch_up(self, touch):
-		print(self.pos)
+		#print(self.pos)
 		self.timestamp.append(touch.time_update)
 		self.coor.append(touch.spos)
 		self.events.append("up")
@@ -327,7 +327,7 @@ class DragObj2(DragBehavior, Cursor):
 					    
 				else:
 						App.get_running_app().root.current = "trial_Cursor_" + str(int(self.name[13:])+1)
-						print("trial_Cursor_" + (str(int(self.name[13:])+1)))
+						#print("trial_Cursor_" + (str(int(self.name[13:])+1)))
 		return super(DragObj2, self).on_touch_up(touch)
 
 
@@ -392,7 +392,7 @@ class DragObj3(DragBehavior, Cursor):
 
 	#Save MT parameters once cursor is released on top of one of the choice options. 
 	def on_touch_up(self, touch):
-		print(self.pos)
+		#print(self.pos)
 		self.timestamp.append(touch.time_update)
 		self.coor.append(touch.spos)
 		self.events.append("up")
@@ -421,7 +421,7 @@ class DragObj3(DragBehavior, Cursor):
 					    
 				else:
 						App.get_running_app().root.current = "trial_Cursor_" + str(int(self.name[13:])+1)
-						print("trial_cur_" + (str(int(self.name[13:])+1)))
+						#print("trial_cur_" + (str(int(self.name[13:])+1)))
 		return super(DragObj3, self).on_touch_up(touch)
 
 
@@ -605,7 +605,7 @@ class MouseTrackApp(App):
 				screen_rec[i].getStim(stimComb_cur[i][0], stimComb_cur[i][1])
 				screen_rec[i].dragObj.getStim(stimComb_cur[i][0], stimComb_cur[i][1])
 				ScreenM.add_widget(screen_rec[i])
-			print(chooser)
+			#print(chooser)
 		
 		ScreenM.add_widget(countDown)
 		ScreenM.add_widget(logout)

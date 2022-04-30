@@ -124,10 +124,8 @@ class Logout(Screen, FloatLayout, App):
 		for i in range(len(stimList)):
 				for j in range(i+1, len(stimList)):
 					stimComb.append(stimList[j] + stimList[i])
-				print(stimComb)
-				print(len(stimComb))
-				print(saveStim)
-
+				
+				
 		
 
 		shuffle(stimComb)
@@ -136,10 +134,7 @@ class Logout(Screen, FloatLayout, App):
 		shuffle(stimComb)
 		saveStimi["Cursor"] = stimComb[135:225]
 				
-		print(stimComb)
-		print(len(stimComb))
-		print(saveStimi)
-		print(len(saveStimi))
+
 
 				
 		with open("C:\\Users\\maxhi\\OneDrive\\Desktop\\Good_mouse\\Mousetrack\\TheApp\\Rating\\Data\\current_stim.json", 'w') as f: # modify according to your local path

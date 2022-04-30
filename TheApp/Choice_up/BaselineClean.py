@@ -50,7 +50,7 @@ with open("current_stim.json") as json_data:
 #stimComb = df["up"] 
 #stim comb,15= 1+5 = patato + paprika
 #print(stimComb)
-print(df)
+
 
 #stimCombBase = df["baseline"]
 #print(stimCombBase)
@@ -88,7 +88,7 @@ class Login(Screen, FloatLayout):
 		if len(self.username.text) == 2 and self.username.text.isdigit() == True:
 				self.leave_time = str(datetime.now().time())
 				saveData["login"] = {"ppn":self.username.text, "leave_time": self.leave_time}
-				App.get_running_app().root.current = "rec_instruct"
+				App.get_running_app().root.current = "instruction_general"
 		else:
 				popup_username.open()
 
@@ -125,12 +125,46 @@ logout = Logout(name="logout")
 
 logout.getIns(ins_logout)
 
-
-
-#creating a class to test, playing with the classes and their setups.
-class rec_instruction(Screen, FloatLayout):
+## Define class for instruction pages
+# general instruction
+class InstructionGeneral(Screen, FloatLayout):
 	def __init__(self, **kwargs):
-		super(rec_instruction, self).__init__(**kwargs)
+		super(InstructionGeneral, self).__init__(**kwargs)
+		self.label1 = Label(text="Instruction: ", size_hint=(0.5,0.1), pos_hint={"right":0.75, "top":0.88}, font_size=sp(30), color=(1,1,1,1), halign="center")
+		self.label2 = Label(text="", size_hint=(0.7,0.6), pos_hint={"right":0.85, "top":0.85}, font_size=sp(18), color=(1,1,1,1))
+		self.button = Button(text="NEXT", pos_hint={"right":0.6, "top":0.2}, size_hint=(0.2,0.1), font_size=sp(25), color=(1,1,1,1))
+		#time point of leaving this page
+		self.leave_time = ""
+		self.username = login.username.text
+		self.button.bind(on_press=self.on_press)
+		self.add_widget(self.label1)
+		self.add_widget(self.label2)
+		self.add_widget(self.button)
+		self.next_page = ""
+
+	def getIns(self, ins):
+		self.label2.text = ins
+
+	def on_press(self, instance):
+		self.leave_time = str(datetime.now().time())
+		saveData[self.name] = {"leave_time":self.leave_time}
+		App.get_running_app().root.current = "practice_trial"
+				
+# define the instruction texts
+ins_general = "In this block, you are going to complete 50 food choice trials. In each trial,\n"\
+			"you will be presented with two food images on the top left and top right\n"\
+			"corners of the screen. Your task is to move the blue cursor at the bottom\n"\
+			"of the screen to the food item you prefer. The food items will only appear\n"\
+			"once you start to move the cursor. Click 'NEXT' to practice a trial"
+
+# make the instances for different instruction pages
+instruction_general = InstructionGeneral(name="instruction_general")
+instruction_general.getIns(ins=ins_general)
+
+# instructions for different trial types
+class InstructionTrial(Screen, FloatLayout):
+	def __init__(self, **kwargs):
+		super(InstructionTrial, self).__init__(**kwargs)
 		self.label1 = Label(text="", size_hint=(0.7, 0.6), pos_hint={"right":0.85, "top":0.85}, font_size=sp(18), color=(1,1,1,1))
 		self.button = Button(text="NEXT", pos_hint={"right":0.6, "top":0.2}, size_hint=(0.2,0.1), font_size=sp(25), color=(1,1,1,1))
 		#time point of leaving this page
@@ -145,29 +179,15 @@ class rec_instruction(Screen, FloatLayout):
 	def on_press(self, instance):
 		self.leave_time = str(datetime.now().time())
 		saveData[self.name] = {"leave_time":self.leave_time}
-		App.get_running_app().root.current = "trial_Recommendation_0"
+		App.get_running_app().root.current = "trial_Baseline_0"
+
+label_trial = "Now, if you don't have any further questions, you can start the real trials. Please be\n"\
+			"careful and truthful to your choices, as you will be asked to eat a random item you\n"\
+			"choose at the end of the experiment. Please click 'NEXT' to proceed."
 
 
-
-label2_rec_in = "You've completed the first block of trials\n"\
-				"You can take a break for a minute\n"\
-				"The next 90 trials contain a recommendation for one of the items\n"\
-				"The recommendations are based on a person's average diet"
-			
-
-
-rec_instruct = rec_instruction(name="rec_instruct")
-rec_instruct.getLabel(label2_rec_in)
-
-
-
-
-
-
-
-
-
-
+instruction_trial = InstructionTrial(name="instruction_trial")
+instruction_trial.getLabel(label_trial)
 
 
 
@@ -238,14 +258,11 @@ Builder.load_string("""
 
 # Create class to make cursor movable and measure MT parameters 
 
-
-
-
-
-
-class DragObj(DragBehavior, Cursor):
+#########----------------------
+#CREATING THE CONTROL DRAGOBJ for the baseline measurement.
+class DragObj_base(DragBehavior, Cursor):
 	def __init__(self, **kwargs):
-		super(DragObj, self).__init__(**kwargs)
+		super(DragObj_base, self).__init__(**kwargs)
 
 		
 		# position of dragobj
@@ -290,18 +307,18 @@ class DragObj(DragBehavior, Cursor):
 					self.coor2.append(((self.x+self.width/2)/Window.width, (self.y+self.height/2)/Window.height))
 				self.record = Clock.schedule_interval(getCoor, 0.01)
 				self.parent.parent.update(self)
-		return super(DragObj, self).on_touch_down(touch)
+		return super(DragObj_base, self).on_touch_down(touch)
 
 	def on_touch_move(self, touch):
 		#print(Clock.get_rfps())
 		self.timestamp.append(touch.time_update)
 		self.events.append("move")
 		self.coor.append(touch.spos)
-		return super(DragObj, self).on_touch_move(touch)
+		return super(DragObj_base, self).on_touch_move(touch)
 
 	#Save MT parameters once cursor is released on top of one of the choice options. 
 	def on_touch_up(self, touch):
-		print(self.pos)
+		#print(self.pos)
 		self.timestamp.append(touch.time_update)
 		self.coor.append(touch.spos)
 		self.events.append("up")
@@ -316,55 +333,118 @@ class DragObj(DragBehavior, Cursor):
 		if self.end == True:
 				self.leave_time = str(datetime.now().time())
 				saveData[self.name] = {"stim":(self.stim1+self.stim2), "coor":self.coor, "time":self.timestamp, "coor2":self.coor2, "time2":self.timestamp2, "events":self.events, "resp":self.response, "leave_time":self.leave_time}
-				if self.name == "trial_Recommendation_"+str((len(stimComb_rec)-1)):
-						
-						App.get_running_app().root.current = 'cursor_ins' 
+				if self.name == "trial_Baseline_"+str((len(stimComb_base)-1)):
+						App.get_running_app().root.current = 'logout' 
 				
 				elif self.name =="practice_trial":
+						App.get_running_app().root.current = "practice_trial2"
+				
+				elif self.name =="practice_trial2":
+						App.get_running_app().root.current = "practice_trial3"
+
+				elif self.name =="practice_trial3":
+						App.get_running_app().root.current = "practice_trial4"
+				
+				elif self.name =="practice_trial4":
+						App.get_running_app().root.current = "practice_trial5"
+
+				elif self.name =="practice_trial5":
+						App.get_running_app().root.current = "practice_trial6"
+				
+
+				elif self.name =="practice_trial6":
 						App.get_running_app().root.current = "instruction_trial"
+				
+				
 				
 				#elif self.name =="recommendation_trial":
 						#App.get_running_app().root.current = "cursor_ins"
 				
-				elif self.name == "control_trial":
-						App.get_running_app().root.current = "rec_instruct"
+				#elif self.name == "control_trial":
+						#App.get_running_app().root.current = "rec_instruct"
 						#print('control check')
 					    
 				else:
-						App.get_running_app().root.current = "trial_Recommendation_" + str(int(self.name[21:])+1)
-						print("trial_Recy_" + (str(int(self.name[21:])+1)))
-		return super(DragObj, self).on_touch_up(touch)
+						App.get_running_app().root.current = "trial_Baseline_" + str(int(self.name[15:])+1)
+						
+		return super(DragObj_base, self).on_touch_up(touch)
 
 
 
 
-
-#------------------------------------------------------------------
-#CREATING THE SECOND DRAG OBJECT SWITHC
-#------------------------------------------------------------------
-
-
-
-
-
+#############################
+#Creating the recommendation in between control trials dragobject
+############################
 
 
 
 
 
 
-#defining a variable which keeps takes a random suggestion between left and right.
-################
-#Basline mousetravck class
-#############
-rec_list = ["The machine recommends \n"\
-			"the left item" , 
-			"The machine recommends the \n"\
-			"right item"]
-recommendation = (random.choice(rec_list))
+class MouseTrack_base(Screen, FloatLayout):
+	def __init__(self, **kwargs):
+		super(MouseTrack_base, self).__init__(**kwargs)
+		self.dragObj = DragObj_base()
+		self.background = Widget()
+		self.dragObj.name = self.name
+		#left stim
+		self.stim1 = Image(pos_hint={"left":0, "top":1}, size_hint=(0.18, 0.315), source='')
+		#right stim
+		self.stim2 = Image(pos_hint={"right":1, "top":1}, size_hint=(0.18, 0.315), source='')
+		self.black1 = Image(pos_hint={"left":0, "top":1}, size_hint=(0.18, 0.315), source='./black.png')
+		self.black2 = Image(pos_hint={"right":1, "top":1}, size_hint=(0.18, 0.315), source='./black.png')
+
+		#add the recommendation in text
+		self.label2 = Label(text="", size_hint=(0.5, 0.2), pos_hint={"right":0.75, "top":0.9}, font_size=sp(14), color=(1,1,1,1), halign="center")
+		self.black3 = Image(pos_hint={"right":0.75, "top":1}, size_hint=(0.5, 0.45), source='./black.png')
+		#self.getrecommend()	
 
 
+		#question item
+		self.label = Label(text="", size_hint=(0.5, 0.2), pos_hint={"right":0.75, "top":0.6}, font_size=sp(18), color=(1,1,1,1), halign = "center")
+		self.add_widget(self.stim1)
+		self.add_widget(self.stim2)
+		self.getLabel()
+		self.add_widget(self.label)
+		
+		#adding the label as a widget
+		
+		self.add_widget(self.black1)
+		self.add_widget(self.black2)
+		
+		#adding the label and the black image over it
+		#self.add_widget(self.label2)
+		#self.add_widget(self.black3)
 
+		self.background.add_widget(self.dragObj)
+		self.add_widget(self.background)
+
+	def getStim(self, stim1, stim2):
+		self.stim1.source=('./images/'+stim1+'.jpg')
+		self.stim2.source=('./images/'+stim2+'.jpg')
+	
+	#define a function to get the recommendation
+	#def getrecommend(self):
+	#	self.label2.text = random.choice(rec_list)
+	#	pass
+
+	def update(self, instance):
+		self.remove_widget(self.black1)
+		self.remove_widget(self.black2)
+		self.remove_widget(self.label)
+		
+
+		#remove the added labels.
+		#self.remove_widget(self.black3)
+
+	
+
+	def getLabel(self):	
+		self.label.text = "Please move the cursor to the food item you prefer."
+				
+
+#######
+#Mousetrack for inbetween control trials.
 
 
 
@@ -440,83 +520,36 @@ class MouseTrack(Screen, FloatLayout):
 
 
 
-
-#Creating the class for the recommendation.
-class MouseTrack_rec(Screen, FloatLayout):
-	def __init__(self, **kwargs):
-		super(MouseTrack_rec, self).__init__(**kwargs)
-		self.dragObj = DragObj()
-		self.background = Widget()
-		self.dragObj.name = self.name
-		#left stim
-		self.stim1 = Image(pos_hint={"left":0, "top":1}, size_hint=(0.18, 0.315), source='')
-		#right stim
-		self.stim2 = Image(pos_hint={"right":1, "top":1}, size_hint=(0.18, 0.315), source='')
-		self.black1 = Image(pos_hint={"left":0, "top":1}, size_hint=(0.18, 0.315), source='./black.png')
-		self.black2 = Image(pos_hint={"right":1, "top":1}, size_hint=(0.18, 0.315), source='./black.png')
-
-		#add the recommendation in text
-		self.label2 = Label(text="", size_hint=(0.5, 0.2), pos_hint={"right":0.75, "top":0.9}, font_size=sp(18), color=(1,1,1,1), halign="center")
-		self.black3 = Image(pos_hint={"right":1.1, "top":1.3}, size_hint=(1.2, 0.6), source='./black.png')
-		self.getrecommend()
-
-
-		#question item
-		self.label = Label(text="", size_hint=(0.5, 0.2), pos_hint={"right":0.75, "top":0.6}, font_size=sp(18), color=(1,1,1,1), halign = "center")
-		self.add_widget(self.stim1)
-		self.add_widget(self.stim2)
-		self.getLabel()
-		self.add_widget(self.label)
-
-		#adding the label as a widget
-		
-		self.add_widget(self.black1)
-		self.add_widget(self.black2)
-		
-		#adding the label and the black image over it
-		self.add_widget(self.label2)
-		self.add_widget(self.black3)
-
-		self.background.add_widget(self.dragObj)
-		self.add_widget(self.background)
-
-	def getStim(self, stim1, stim2):
-		self.stim1.source=('./images/'+stim1+'.jpg')
-		self.stim2.source=('./images/'+stim2+'.jpg')
-	
-	#define a function to get the recommendation
-	def getrecommend(self):
-		self.label2.text = random.choice(rec_list)
-		pass
-
-	def update(self, instance):
-		self.remove_widget(self.black1)
-		self.remove_widget(self.black2)
-		self.remove_widget(self.label)
-		
-
-		#remove the added labels.
-		self.remove_widget(self.black3)
-
-	
-
-	def getLabel(self):	
-		self.label.text = "Please move the cursor to the food item you prefer."
-
-
-
 #------------------------
 #the various test trials
 #------------------------
+practice_trial = MouseTrack_base(name="practice_trial")
+practice_trial.getStim("practice1", "practice2")
+practice_trial.dragObj.getStim("practice1", "practice2")
+
+practice_trial2 = MouseTrack_base(name="practice_trial2")
+practice_trial2.getStim("practice1", "practice2")
+practice_trial2.dragObj.getStim("practice1", "practice2")
+
+practice_trial3 = MouseTrack_base(name="practice_trial3")
+practice_trial3.getStim("practice1", "practice2")
+practice_trial3.dragObj.getStim("practice1", "practice2")
+
+practice_trial4 = MouseTrack_base(name="practice_trial4")
+practice_trial4.getStim("practice1", "practice2")
+practice_trial4.dragObj.getStim("practice1", "practice2")
+
+practice_trial5 = MouseTrack_base(name="practice_trial5")
+practice_trial5.getStim("practice1", "practice2")
+practice_trial5.dragObj.getStim("practice1", "practice2")
+
+practice_trial6 = MouseTrack_base(name="practice_trial6")
+practice_trial6.getStim("practice1", "practice2")
+practice_trial6.dragObj.getStim("practice1", "practice2")
 
 
 
-recommendation_trial = MouseTrack_rec(name="recommendation_trial")
-recommendation_trial.getStim("practice1", "practice2")
-recommendation_trial.dragObj.getStim("practice1", "practice2")
-
-
-
+stimComb_pract = ["12", "24", "38", "17", "96", "22"]
 
 #---------------------------
 ## Build the app
@@ -526,18 +559,34 @@ class MouseTrackApp(App):
 		ScreenM = ScreenManager(transition=WipeTransition())
 		
 		ScreenM.add_widget(login)
+		ScreenM.add_widget(instruction_general)
+	
+		ScreenM.add_widget(practice_trial)
+		ScreenM.add_widget(practice_trial2)
+		ScreenM.add_widget(practice_trial3)
+		ScreenM.add_widget(practice_trial4)
+		ScreenM.add_widget(practice_trial5)
+		ScreenM.add_widget(practice_trial6)
 		
 		
-		ScreenM.add_widget(rec_instruct)
+		ScreenM.add_widget(instruction_trial)
 
-		ScreenM.add_widget(recommendation_trial)
+		#ScreenM.add_widget(control_trial)
+
+
 
 		
 		# screens of real trials in block 1
 		screen_trial = []
 
 		#test list for easy of testing
-		
+		screen_control = []
+		for i in range(len(stimComb_base)):
+			screen_control.append(MouseTrack_base(name="trial_Baseline_"+str(i)))
+			screen_control[i].getStim(stimComb_base[i][0], stimComb_base[i][1])
+			screen_control[i].dragObj.getStim(stimComb_base[i][0], stimComb_base[i][1])
+			ScreenM.add_widget(screen_control[i])
+			
 		
 		
 		screen_rec = []
@@ -546,24 +595,9 @@ class MouseTrackApp(App):
 		ranger = len(stimComb_rec)	
 		correct_range = (ranger - 1)
 		
-		for i in range(ranger):	
-			chooser = random.choice(["recommendation", "control"])
-			if chooser == "control":	
-				screen_trial.append(MouseTrack(name="trial_Recommendation_"+str(i)))
-				screen_trial[i].getStim(stimComb_rec[i][0], stimComb_rec[i][1])
-				screen_trial[i].dragObj.getStim(stimComb_rec[i][0], stimComb_rec[i][1])
-				ScreenM.add_widget(screen_trial[i])
-			elif chooser =="recommendation":
-				screen_trial.append(MouseTrack_rec(name="trial_Recommendation_"+str(i)))
-				screen_trial[i].getStim(stimComb_rec[i][0], stimComb_rec[i][1])
-				screen_trial[i].dragObj.getStim(stimComb_rec[i][0], stimComb_rec[i][1])
-				ScreenM.add_widget(screen_trial[i])
-			#	
-			print(chooser)
-
 		
 		
-		
+		ScreenM.add_widget(countDown)
 		ScreenM.add_widget(logout)
 		return ScreenM
 
