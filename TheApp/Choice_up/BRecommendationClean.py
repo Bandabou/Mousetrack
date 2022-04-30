@@ -43,7 +43,7 @@ import json
 #This part combines all stimuli pairs in a list, with each option appearing left and right once, and randomizes them. Input the names of the images without the image extention here.
 saveData = {}
 
-path = "C:\\Users\\maxhi\\OneDrive\\Desktop\\Good_mouse\\Mousetrack\\TheApp\\Rating\\Data\\"
+path = "..\\Rating\\Data\\"
 os.chdir(path)
 with open("current_stim.json") as json_data:
 	df = json.load(json_data)
@@ -113,7 +113,8 @@ class Logout(Screen, FloatLayout, App):
 	def on_press(self, instance):
 		self.leave_time = str(datetime.now().time())
 		saveData["logout"] = {"leave_time":self.leave_time}
-		with open("C:\\Users\\maxhi\\OneDrive\\Desktop\\Good_mouse\\Mousetrack\\TheApp\\Choice_up\\Data\\p"+login.username.text+"_choice_up_B.json", 'w') as f: # modify according to your local path
+		#with open("C:\Users\participant\Desktop\Mousetrack-main\TheApp\Choice_up\Data\\p"+login.username.text+"_choice_up_B.json", 'w') as f: # backup
+		with open("\\Data\\p"+login.username.text+"_choice_up_B.json", 'w') as f: # modify according to your local path
 			json.dump(saveData, f)
 		App.get_running_app().stop()
 
