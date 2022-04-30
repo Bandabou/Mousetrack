@@ -113,7 +113,7 @@ class Logout(Screen, FloatLayout, App):
 	def on_press(self, instance):
 		self.leave_time = str(datetime.now().time())
 		saveData["logout"] = {"leave_time":self.leave_time}
-		with open("C:\\Users\\maxhi\\OneDrive\\Desktop\\Good_mouse\\Mousetrack\\TheApp\\Choice_up\\Data\\p"+login.username.text+"_choice_up.json", 'w') as f: # modify according to your local path
+		with open("C:\\Users\\maxhi\\OneDrive\\Desktop\\Good_mouse\\Mousetrack\\TheApp\\Choice_up\\Data\\p"+login.username.text+"_choice_up_A.json", 'w') as f: # modify according to your local path
 			json.dump(saveData, f)
 		App.get_running_app().stop()
 
