@@ -317,7 +317,7 @@ class DragObj2(DragBehavior, Cursor):
 				self.leave_time = str(datetime.now().time())
 				saveData[self.name] = {"stim":(self.stim1+self.stim2), "coor":self.coor, "time":self.timestamp, "coor2":self.coor2, "time2":self.timestamp2, "events":self.events, "resp":self.response, "leave_time":self.leave_time, "recommendation":self.recommendation}
 				if self.name == "trial_Cursor_"+str((len(stimComb_cur)-1)):
-						App.get_running_app().root.current = "count_down"
+						App.get_running_app().root.current = "logout"
 				
 				#elif self.name =="practice_trial":
 						#App.get_running_app().root.current = "instruction_trial"

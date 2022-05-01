@@ -324,7 +324,7 @@ class DragObj(DragBehavior, Cursor):
                                         
 				if self.name == "trial_Recommendation_"+str((len(stimComb_rec)-1)):
 						
-						App.get_running_app().root.current = 'cursor_ins' 
+						App.get_running_app().root.current = 'logout' 
 				
 				elif self.name =="practice_trial":
 						App.get_running_app().root.current = "instruction_trial"
