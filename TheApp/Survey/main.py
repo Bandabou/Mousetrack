@@ -90,8 +90,7 @@ class Logout(Screen, FloatLayout, App):
 	def on_press(self, instance):
 		self.leave_time = str(datetime.now().time())
 		saveData["logout"] = {"leave_time":self.leave_time}
-		#with open("C:\\Users\\participant\\Desktop\\Mousetrack-main\\TheApp\\Survey\\Data\\p"+login.username.text+"_survey.json", 'w') as f: # backup
-		with open("\\Data\\p"+login.username.text+"_survey.json", 'w') as f: # modify according to your local path
+		with open("C:\\Users\\participant\\Desktop\\Mousetrack-main\\TheApp\\Survey\\Data\\p"+login.username.text+"_survey.json", 'w') as f: # modify according to your local path
 			json.dump(saveData, f)
 		lastPage.getImage()
 		App.get_running_app().root.current = "lastPage"
