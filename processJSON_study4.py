@@ -298,33 +298,27 @@ f.writerow(["ppn", "condition", "age", "gender", "length", "weight", "hand", "di
 		"drag_time2", "hold_time2", "angle2", "IMA2", "coor_x2", "coor_y2", "coor_x_ab2", "coor_y_ab2", "coor_x_ab_direction2", "coor_y_ab_direction2", "events"]) 
 
 ## load data
-os.chdir("D:\\PhD\\Projects\\Mouse-tracking_3.0\\Data\Analysis\\JSON\\")
-for folder in os.listdir("D:\\PhD\\Projects\\Mouse-tracking_3.0\\Data\Analysis\\JSON\\"):
-	os.chdir("D:\\PhD\\Projects\\Mouse-tracking_3.0\\Data\Analysis\\JSON\\"+folder)
-	if os.path.isdir('D:\\PhD\\Projects\\Mouse-tracking_3.0\\Data\Analysis\\JSON\\'+folder+'\\plots\\') == False:
-		os.makedirs('D:\\PhD\\Projects\\Mouse-tracking_3.0\\Data\Analysis\\JSON\\'+folder+'\\plots\\')
-	print(folder)
-	if folder != "p44":
-		with open(folder+"_rating.json") as json_data:
-			df_rating = json.load(json_data)
-	else:
-		df_rating = {}
-		# make an empty data for participant 44 who did not do the ratings
-		for i in range(10):
-			df_rating["rating_"+str(i)] = {"stim":""}
+os.chdir("Data\Analysis\\JSON\\")
+
+for folder in os.listdir("Data\Analysis\\JSON\\"): 
+	print(folder) # folder = participant
+	os.chdir("Data\Analysis\\JSON\\"+folder)
+
+	if os.path.isdir('Data\Analysis\\JSON\\'+folder+'\\plots\\') == False:
+		os.makedirs('Data\Analysis\\JSON\\'+folder+'\\plots\\')
+
+	with open(folder+"_rating.json") as json_data:
+		df_rating = json.load(json_data)
+
 	with open(folder+"_choice_mouse.json") as json_data:
 		df_choice_mouse = json.load(json_data)
-	if folder != "p08": # participant 8 did not complete the touch-screen condition
-		with open(folder+"_choice_touch.json") as json_data:
-			df_choice_touch = json.load(json_data)
-	else:
-		df_choice_touch = {}
-		# make an empty data for participant 8 in touch-screen condition
-		for i in range(100):
-			df_choice_touch["trial_touch_"+str(i)] = {"stim":"", "coor":[], "time":[], "coor2":[], "time2":[], "events":[], "resp":"", "nudge":"", "nudgeDirection":"", "leave_time":""}
+		
+	with open(folder+"_choice_touch.json") as json_data:
+		df_choice_touch = json.load(json_data)
 
 	with open(folder+"_survey.json") as json_data:
 		df_survey = json.load(json_data)
+		
 	df_choice = dict(df_choice_mouse, **df_choice_touch) # some variables in mouse session are overrided by the same variables in touch session
 	if int(folder[1:]) % 2 == 1:
 		condition = "touch_first"
