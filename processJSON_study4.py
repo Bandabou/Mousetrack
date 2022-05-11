@@ -296,7 +296,7 @@ def get_parameters(m=""):# m for naming keys
 food_list = ["Sushi", "Chips", "Banana", "Pear", "Radish", "Bell pepper", "Donuts", "Mars", "French fries", "KinderBueno"]
 
 ## save data as CSV file
-f = csv.writer(open("Data\Analysis\\data_merged.csv", "wb+"), delimiter=";")
+f = csv.writer(open("..\\Participant\\data_merged.csv", "wb+"), delimiter=";")
 
 f.writerow(["ppn", "condition", "age", "gender", "length", "weight", "hand", "diet", "diet_text", "allergies", "allergies_text", "goal_health", "hunger", "vegan",
 		"tsc1", "tsc2", "tsc3", "tsc4", "tsc5", "tsc6", "tsc7", "tsc8", "tsc9", "tsc10", "tsc11", "tsc12", "tsc13",
@@ -306,14 +306,14 @@ f.writerow(["ppn", "condition", "age", "gender", "length", "weight", "hand", "di
 		"drag_time2", "hold_time2", "angle2", "IMA2", "coor_x2", "coor_y2", "coor_x_ab2", "coor_y_ab2", "coor_x_ab_direction2", "coor_y_ab_direction2", "events"]) 
 
 ## load data
-os.chdir("Data\Analysis\\JSON\\")
+os.chdir("..\\Participant\\")
 
-for folder in os.listdir("Data\Analysis\\JSON\\"): 
+for folder in os.listdir("Participant\\"): 
 	print(folder) # folder = participant
-	os.chdir("Data\Analysis\\JSON\\"+folder)
+	os.chdir("..\\Participant\\"+folder)
 
-	if os.path.isdir('Data\Analysis\\JSON\\'+folder+'\\plots\\') == False:
-		os.makedirs('Data\Analysis\\JSON\\'+folder+'\\plots\\')
+	if os.path.isdir('"..\\Participant\\'+folder+'\\plots\\') == False:
+		os.makedirs('"..\\Participant\\'+folder+'\\plots\\')
 
 	with open(folder+"_rating.json") as json_data:
 		df_rating = json.load(json_data)
@@ -469,5 +469,5 @@ for folder in os.listdir("Data\Analysis\\JSON\\"):
 			plt.text(0.7, -0.05, s='commitment = '+str(round(d["commitment"], 1))+"/"+str(round(d["commitment2"], 1)))
 			plt.text(0.7, -0.1, s='min_distance = '+str(round(d["min_distance"], 2))+"/"+str(round(d["min_distance2"], 2)))
 
-			plt.savefig('Data\Analysis\\JSON\\'+folder+'\\plots\\'+i+".png")
+			plt.savefig('"..\\Participant\\'+folder+'\\plots\\'+i+".png")
 			plt.close()
