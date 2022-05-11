@@ -1,3 +1,11 @@
+"""
+Max & Bouke Data Processing script
+Based on Chao old script
+
+Tip: 'SHIFT + ALT + F' --> Format JSON
+"""
+
+
 from __future__ import division
 import json
 import math
@@ -320,29 +328,31 @@ for folder in os.listdir("Data\Analysis\\JSON\\"):
 		df_survey = json.load(json_data)
 		
 	df_choice = dict(df_choice_mouse, **df_choice_touch) # some variables in mouse session are overrided by the same variables in touch session
-	if int(folder[1:]) % 2 == 1:
-		condition = "touch_first"
-	else:
-		condition = "mouse_first"
+	
+	#condition = excel sheet
 
 	## extract MT parameters based on the event-tracking
 	for i in df_choice.keys():
-		if i.find("trial_") != -1:
+		if i.find("trial_") != -1: # check if trial
 			d = df_choice[i]
-			trial_no = int(i[i.rfind("_")+1:])
-			trial_block = i[i.find("_")+1:i.rfind("_")]
-			if d["time2"] != []:
+			trial_no = int(i[i.rfind("_")+1:]) # get trial number after "trial_"
+			trial_block = i[i.find("_")+1:i.rfind("_")] 
+
+			# convert to seconds
+			if d["time2"] != []: # check if data
 				for k in range(len(d["time2"])):
 					d["time2"][k] = get_second(d["time2"][k])
 
 			# dragging time
-			if d["time"] != []:
+			if d["time"] != []: # check if data
 				d["drag_time"] = d['time'][-1] - d['time'][0]
 				d["hold_time"] = d["time"][1] - d["time"][0]
 				d["drag_time2"] = d["time2"][-1] - d["time2"][0]
+
 				for k in range(1, len(d["coor2"])):
 					if d["coor2"][k][0] != d["coor2"][k-1][0] or d["coor2"][k][1] != d["coor2"][k-1][1]:
 						break
+
 				d["hold_time2"] = d["time2"][k] - d["time2"][0]
 			else:
 				d["drag_time"] = -1
@@ -351,7 +361,7 @@ for folder in os.listdir("Data\Analysis\\JSON\\"):
 				d["hold_time2"] = -1
 
 			# RT (time between screens)
-			if d["leave_time"] != "":
+			if d["leave_time"] != "": # check if data
 				if trial_no != 0:
 					d["RT"] = get_second(d["leave_time"]) - get_second(df_choice[i[0:i.rfind("_")+1]+str(trial_no-1)]["leave_time"])
 				else:
@@ -380,7 +390,7 @@ for folder in os.listdir("Data\Analysis\\JSON\\"):
 
 			## additional variables
 			# choice direction
-			if d["resp"] != "":
+			if d["resp"] != "": # check if data
 				if d["resp"] == d["stim"][0]:
 					d["direction"] = "Left"
 				else:
@@ -454,5 +464,5 @@ for folder in os.listdir("Data\Analysis\\JSON\\"):
 			plt.text(0.7, 0, s='drag_time = '+str(round(d["drag_time"], 2))+"/"+str(round(d["drag_time2"], 2)))
 			plt.text(0.7, -0.05, s='commitment = '+str(round(d["commitment"], 1))+"/"+str(round(d["commitment2"], 1)))
 			plt.text(0.7, -0.1, s='min_distance = '+str(round(d["min_distance"], 2))+"/"+str(round(d["min_distance2"], 2)))
-			plt.savefig('D:\\PhD\\Projects\\Mouse-tracking_3.0\\Data\Analysis\\JSON\\'+folder+'\\plots\\'+i+".png")
+			plt.savefig('Data\Analysis\\JSON\\'+folder+'\\plots\\'+i+".png")
 			plt.close()
