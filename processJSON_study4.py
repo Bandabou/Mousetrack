@@ -295,8 +295,10 @@ def get_parameters(m=""):# m for naming keys
 
 food_list = ["Sushi", "Chips", "Banana", "Pear", "Radish", "Bell pepper", "Donuts", "Mars", "French fries", "KinderBueno"]
 
+abs_path = "C:\\Users\\bouke\\Documents\\GitHub\\DataAnalysis\\"
+par_path = abs_path + "Participant\\"
 ## save data as CSV file
-f = csv.writer(open("..\\Participant\\data_merged.csv", "wb+"), delimiter=";")
+f = csv.writer(open(abs_path + "data_merged.csv", "w"), delimiter=";")
 
 f.writerow(["ppn", "condition", "age", "gender", "length", "weight", "hand", "diet", "diet_text", "allergies", "allergies_text", "goal_health", "hunger", "vegan",
 		"tsc1", "tsc2", "tsc3", "tsc4", "tsc5", "tsc6", "tsc7", "tsc8", "tsc9", "tsc10", "tsc11", "tsc12", "tsc13",
@@ -306,33 +308,38 @@ f.writerow(["ppn", "condition", "age", "gender", "length", "weight", "hand", "di
 		"drag_time2", "hold_time2", "angle2", "IMA2", "coor_x2", "coor_y2", "coor_x_ab2", "coor_y_ab2", "coor_x_ab_direction2", "coor_y_ab_direction2", "events"]) 
 
 ## load data
-os.chdir("..\\Participant\\")
+os.chdir(par_path)
 
-for folder in os.listdir("Participant\\"): 
+for folder in os.listdir(par_path): 
 	print(folder) # folder = participant
-	os.chdir("..\\Participant\\"+folder)
+	os.chdir(par_path + folder)
 
-	if os.path.isdir('"..\\Participant\\'+folder+'\\plots\\') == False:
-		os.makedirs('"..\\Participant\\'+folder+'\\plots\\')
+	if os.path.isdir(par_path + folder + '\\plots\\') == False:
+		os.makedirs(par_path + folder + '\\plots\\')
 
 	with open(folder+"_rating.json") as json_data:
 		df_rating = json.load(json_data)
 
-	with open(folder+"_choice_mouse.json") as json_data:
-		df_choice_mouse = json.load(json_data)
+	with open(folder+"_choice_up.json") as json_data:
+		df_choice_base = json.load(json_data)
 		
-	with open(folder+"_choice_touch.json") as json_data:
-		df_choice_touch = json.load(json_data)
+	with open(folder+"_choice_up_A.json") as json_data:
+		df_choice_text = json.load(json_data)
+
+	with open(folder+"_choice_up_B.json") as json_data:
+		df_choice_cursor = json.load(json_data)
 
 	with open(folder+"_survey.json") as json_data:
 		df_survey = json.load(json_data)
 		
-	df_choice = dict(df_choice_mouse, **df_choice_touch) # some variables in mouse session are overrided by the same variables in touch session
+	df_choice = dict(df_choice_base, **df_choice_text) # some variables in mouse session are overrided by the same variables in touch session
+	print(df_choice)
 	
-	#condition = excel sheet
+	condition = 0 # UPDATE
 
 	## extract MT parameters based on the event-tracking
 	for i in df_choice.keys():
+
 		if i.find("trial_") != -1: # check if trial
 			d = df_choice[i]
 			trial_no = int(i[i.rfind("_")+1:]) # get trial number after "trial_"
@@ -469,5 +476,5 @@ for folder in os.listdir("Participant\\"):
 			plt.text(0.7, -0.05, s='commitment = '+str(round(d["commitment"], 1))+"/"+str(round(d["commitment2"], 1)))
 			plt.text(0.7, -0.1, s='min_distance = '+str(round(d["min_distance"], 2))+"/"+str(round(d["min_distance2"], 2)))
 
-			plt.savefig('"..\\Participant\\'+folder+'\\plots\\'+i+".png")
+			plt.savefig(par_path + folder + '\\plots\\' + i +".png")
 			plt.close()
