@@ -1,11 +1,3 @@
-"""
-Max & Bouke Data Processing script
-Based on Chao old script
-
-Tip: 'SHIFT + ALT + F' --> Format JSON
-"""
-
-
 from __future__ import division
 import json
 import math
@@ -46,7 +38,7 @@ def find_nearest(array, value):
 def get_second(s, ftr = [3600,60,1]):
 	return sum([a*b for a,b in zip(ftr, map(float, s.split(':')))])
 
-def get_parameters(m=""):# m for naming keys
+def get_parameters(m=""):
 	# for parameters below, only include trials with more than 10 points (at least 5 unique points) and when there was no touch_up in the middle of the trial (participant did not realse finger)
 	if len(df_choice[i]["coor"+m]) > 0:
 		#recode time into 101 time bins and coor to [0,0] at start and [1,1] at end
@@ -277,7 +269,7 @@ def get_parameters(m=""):# m for naming keys
 			angle_current = abs(angle_temp) * np.sign(d["coor_x_ab_direction"+m][j])
 			d["angle"+m].append(angle_current)
 
-	else: # empty placeholders
+	else:
 		d["coor_ab"+m] = []
 		d["MD"+m] = -1
 		d["y_MD"+m] = -1
@@ -296,7 +288,7 @@ def get_parameters(m=""):# m for naming keys
 food_list = ["Sushi", "Chips", "Banana", "Pear", "Radish", "Bell pepper", "Donuts", "Mars", "French fries", "KinderBueno"]
 
 ## save data as CSV file
-f = csv.writer(open("Data\Analysis\\data_merged.csv", "wb+"), delimiter=";")
+f = csv.writer(open("D:\\PhD\\Projects\\Mouse-tracking_3.0\\Data\Analysis\\data_merged.csv", "wb+"), delimiter=";")
 
 f.writerow(["ppn", "condition", "age", "gender", "length", "weight", "hand", "diet", "diet_text", "allergies", "allergies_text", "goal_health", "hunger", "vegan",
 		"tsc1", "tsc2", "tsc3", "tsc4", "tsc5", "tsc6", "tsc7", "tsc8", "tsc9", "tsc10", "tsc11", "tsc12", "tsc13",
@@ -306,53 +298,57 @@ f.writerow(["ppn", "condition", "age", "gender", "length", "weight", "hand", "di
 		"drag_time2", "hold_time2", "angle2", "IMA2", "coor_x2", "coor_y2", "coor_x_ab2", "coor_y_ab2", "coor_x_ab_direction2", "coor_y_ab_direction2", "events"]) 
 
 ## load data
-os.chdir("Data\Analysis\\JSON\\")
-
-for folder in os.listdir("Data\Analysis\\JSON\\"): 
-	print(folder) # folder = participant
-	os.chdir("Data\Analysis\\JSON\\"+folder)
-
-	if os.path.isdir('Data\Analysis\\JSON\\'+folder+'\\plots\\') == False:
-		os.makedirs('Data\Analysis\\JSON\\'+folder+'\\plots\\')
-
-	with open(folder+"_rating.json") as json_data:
-		df_rating = json.load(json_data)
-
+os.chdir("D:\\PhD\\Projects\\Mouse-tracking_3.0\\Data\Analysis\\JSON\\")
+for folder in os.listdir("D:\\PhD\\Projects\\Mouse-tracking_3.0\\Data\Analysis\\JSON\\"):
+	os.chdir("D:\\PhD\\Projects\\Mouse-tracking_3.0\\Data\Analysis\\JSON\\"+folder)
+	if os.path.isdir('D:\\PhD\\Projects\\Mouse-tracking_3.0\\Data\Analysis\\JSON\\'+folder+'\\plots\\') == False:
+		os.makedirs('D:\\PhD\\Projects\\Mouse-tracking_3.0\\Data\Analysis\\JSON\\'+folder+'\\plots\\')
+	print(folder)
+	if folder != "p44":
+		with open(folder+"_rating.json") as json_data:
+			df_rating = json.load(json_data)
+	else:
+		df_rating = {}
+		# make an empty data for participant 44 who did not do the ratings
+		for i in range(10):
+			df_rating["rating_"+str(i)] = {"stim":""}
 	with open(folder+"_choice_mouse.json") as json_data:
 		df_choice_mouse = json.load(json_data)
-		
-	with open(folder+"_choice_touch.json") as json_data:
-		df_choice_touch = json.load(json_data)
+	if folder != "p08": # participant 8 did not complete the touch-screen condition
+		with open(folder+"_choice_touch.json") as json_data:
+			df_choice_touch = json.load(json_data)
+	else:
+		df_choice_touch = {}
+		# make an empty data for participant 8 in touch-screen condition
+		for i in range(100):
+			df_choice_touch["trial_touch_"+str(i)] = {"stim":"", "coor":[], "time":[], "coor2":[], "time2":[], "events":[], "resp":"", "nudge":"", "nudgeDirection":"", "leave_time":""}
 
 	with open(folder+"_survey.json") as json_data:
 		df_survey = json.load(json_data)
-		
 	df_choice = dict(df_choice_mouse, **df_choice_touch) # some variables in mouse session are overrided by the same variables in touch session
-	
-	#condition = excel sheet
+	if int(folder[1:]) % 2 == 1:
+		condition = "touch_first"
+	else:
+		condition = "mouse_first"
 
 	## extract MT parameters based on the event-tracking
 	for i in df_choice.keys():
-		if i.find("trial_") != -1: # check if trial
+		if i.find("trial_") != -1:
 			d = df_choice[i]
-			trial_no = int(i[i.rfind("_")+1:]) # get trial number after "trial_"
-			trial_block = i[i.find("_")+1:i.rfind("_")] 
-
-			# convert to seconds
-			if d["time2"] != []: # check if data
+			trial_no = int(i[i.rfind("_")+1:])
+			trial_block = i[i.find("_")+1:i.rfind("_")]
+			if d["time2"] != []:
 				for k in range(len(d["time2"])):
 					d["time2"][k] = get_second(d["time2"][k])
 
 			# dragging time
-			if d["time"] != []: # check if data
+			if d["time"] != []:
 				d["drag_time"] = d['time'][-1] - d['time'][0]
 				d["hold_time"] = d["time"][1] - d["time"][0]
 				d["drag_time2"] = d["time2"][-1] - d["time2"][0]
-
 				for k in range(1, len(d["coor2"])):
 					if d["coor2"][k][0] != d["coor2"][k-1][0] or d["coor2"][k][1] != d["coor2"][k-1][1]:
 						break
-
 				d["hold_time2"] = d["time2"][k] - d["time2"][0]
 			else:
 				d["drag_time"] = -1
@@ -361,7 +357,7 @@ for folder in os.listdir("Data\Analysis\\JSON\\"):
 				d["hold_time2"] = -1
 
 			# RT (time between screens)
-			if d["leave_time"] != "": # check if data
+			if d["leave_time"] != "":
 				if trial_no != 0:
 					d["RT"] = get_second(d["leave_time"]) - get_second(df_choice[i[0:i.rfind("_")+1]+str(trial_no-1)]["leave_time"])
 				else:
@@ -390,7 +386,7 @@ for folder in os.listdir("Data\Analysis\\JSON\\"):
 
 			## additional variables
 			# choice direction
-			if d["resp"] != "": # check if data
+			if d["resp"] != "":
 				if d["resp"] == d["stim"][0]:
 					d["direction"] = "Left"
 				else:
@@ -446,12 +442,9 @@ for folder in os.listdir("Data\Analysis\\JSON\\"):
 			f.writerow([folder, condition, df_survey["survey1"]["age"], df_survey["survey1"]["gender"], df_survey["survey1"]["length"], df_survey["survey1"]["weight"], df_survey["survey1"]["hand"], 
 				df_survey["survey2"]["diet"], df_survey["survey2"]["dietText"], df_survey["survey2"]["allergies"], df_survey["survey2"]["allergiesText"], 
 				df_survey["survey3"]["health"], df_survey["survey3"]["hunger"], df_survey["survey3"]["vegan"], 
-				df_survey["tsc1"]["Q1"], df_survey["tsc1"]["Q2"], df_survey["tsc1"]["Q3"], df_survey["tsc1"]["Q4"], 
-				df_survey["tsc2"]["Q1"], df_survey["tsc2"]["Q2"], df_survey["tsc2"]["Q3"], df_survey["tsc2"]["Q4"], 
-				df_survey["tsc3"]["Q1"], df_survey["tsc3"]["Q2"], df_survey["tsc3"]["Q3"], df_survey["tsc3"]["Q4"], 
-				df_survey["tsc4"]["Q1"],
-				trial_no, trial_block, 
-				d["nudge"], d["nudgeDirection"], d["stim"], d["stim_L"], d["stim_R"], d["health_L"], d["taste_L"], d["health_R"], d["taste_R"], d["choice"], d["direction"],
+				df_survey["tsc1"]["Q1"], df_survey["tsc1"]["Q2"], df_survey["tsc1"]["Q3"], df_survey["tsc1"]["Q4"], df_survey["tsc2"]["Q1"], df_survey["tsc2"]["Q2"], df_survey["tsc2"]["Q3"], 
+				df_survey["tsc2"]["Q4"], df_survey["tsc3"]["Q1"], df_survey["tsc3"]["Q2"], df_survey["tsc3"]["Q3"], df_survey["tsc3"]["Q4"], df_survey["tsc4"]["Q1"],
+				trial_no, trial_block, d["nudge"], d["nudgeDirection"], d["stim"], d["stim_L"], d["stim_R"], d["health_L"], d["taste_L"], d["health_R"], d["taste_R"], d["choice"], d["direction"],
 				d["AUC"], d["MD"], d["y_MD"], d["commitment"], d["min_distance"], d["max_velocity"], d["max_acceleration"], d["x_flip"], d["distance_x"], d["y_flip"], d["distance_y"], d["RT"], d["drag_time"], d["hold_time"], d["angle"], d["IMA"],
 				d["coor_x"], d["coor_y"], d["coor_x_ab"], d["coor_y_ab"], d["coor_x_ab_direction"], d["coor_y_ab_direction"], d["AUC2"], d["MD2"], d["y_MD2"], d["commitment2"], d["min_distance2"], d["max_velocity2"], d["max_acceleration2"], d["x_flip2"], d["distance_x2"], d["y_flip2"],
 				d["distance_y2"], d["drag_time2"], d["hold_time2"], d["angle2"], d["IMA2"], d["coor_x2"], d["coor_y2"], d["coor_x_ab2"], d["coor_y_ab2"], d["coor_x_ab_direction2"], d["coor_y_ab_direction2"], d["events"]]) 
@@ -461,13 +454,11 @@ for folder in os.listdir("Data\Analysis\\JSON\\"):
 			plt.scatter(d['coor_x_ab'], d['coor_y_ab'], color='r')
 			plt.scatter(d['coor_x2'], d['coor_y2'], color="b", marker='+')
 			plt.scatter(d['coor_x_ab2'], d['coor_y_ab2'], color='r', marker='+')
-
 			plt.text(0.7, 0.15, s='AUC = '+str(round(d["AUC"], 2))+"/"+str(round(d["AUC2"], 2)))
 			plt.text(0.7, 0.1, s='MD = '+str(round(d["MD"], 2))+"/"+str(round(d["MD2"], 2)))
 			plt.text(0.7, 0.05, s='x-flip = '+str(round(d["x_flip"], 1))+"/"+str(round(d["x_flip2"], 1)))
 			plt.text(0.7, 0, s='drag_time = '+str(round(d["drag_time"], 2))+"/"+str(round(d["drag_time2"], 2)))
 			plt.text(0.7, -0.05, s='commitment = '+str(round(d["commitment"], 1))+"/"+str(round(d["commitment2"], 1)))
 			plt.text(0.7, -0.1, s='min_distance = '+str(round(d["min_distance"], 2))+"/"+str(round(d["min_distance2"], 2)))
-
-			plt.savefig('Data\Analysis\\JSON\\'+folder+'\\plots\\'+i+".png")
+			plt.savefig('D:\\PhD\\Projects\\Mouse-tracking_3.0\\Data\Analysis\\JSON\\'+folder+'\\plots\\'+i+".png")
 			plt.close()
