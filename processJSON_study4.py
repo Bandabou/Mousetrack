@@ -62,7 +62,14 @@ def get_parameters(m=""):# m for naming keys
 		for c in range(len(d["timestamp"])):
 			idx = find_nearest(d["time"+m], d["timestamp"][c])
 			if (len(idx) == 1) or (d["time"+m][idx[1]] - d["time"+m][idx[0]] == 0):
-				coor = [(d["coor"+m][idx[0]][0] - start[0]) / (end[0] - start[0]), (d["coor"+m][idx[0]][1] - start[1]) / (end[1] - start[1])]
+
+				if (end[0] - start[0]) == 0 or (end[1] - start[1]) == 0:
+					end[0] = 1
+					end[1] = 1
+					print("x_dif: ", start[1] -end[1], "y_dif: ", start[1] -end[1], "x_y_end: ", end, "x_y_start: ", start)
+					coor = [1,1]
+				else:
+					coor = [(d["coor"+m][idx[0]][0] - start[0]) / (end[0] - start[0]), (d["coor"+m][idx[0]][1] - start[1]) / (end[1] - start[1])]
 			else:
 				prop = (d["timestamp"][c] - d["time"+m][idx[0]]) / (d["time"+m][idx[1]] - d["time"+m][idx[0]])
 				x_temp = d["coor"+m][idx[0]][0] + (d["coor"+m][idx[1]][0] - d["coor"+m][idx[0]][0]) * prop
@@ -315,6 +322,8 @@ os.chdir(par_path)
 
 for folder in os.listdir(par_path): # go through participants/folders, folder = pXX (ex. p01)
 	print(folder) # folder = participant
+	#if folder != "p16":
+	#	continue
 	os.chdir(par_path + folder)
 
 	if os.path.isdir(par_path + folder + '\\plots\\') == False: # make plot folder if none
@@ -338,7 +347,7 @@ for folder in os.listdir(par_path): # go through participants/folders, folder = 
 
 	# dict creates dictionary
 	df_choice = dict(df_choice_base, **df_choice_text) # some variables in mouse session are overrided by the same variables in touch session (logout, login, instruction and practice?)
-	df_choice = dict(df_choice_base, **df_choice_cursor)
+	df_choice = dict(df_choice, **df_choice_cursor)
 	#print(df_choice)
 	
 
