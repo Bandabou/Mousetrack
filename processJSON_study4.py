@@ -302,7 +302,10 @@ f = csv.writer(open(abs_path + "data_merged.csv", "w"), delimiter=";")
 
 f.writerow(["ppn", "condition", "age", "gender", "length", "weight", "hand", "diet", "diet_text", "allergies", "allergies_text", "goal_health", "hunger", "vegan",
 		"tsc1", "tsc2", "tsc3", "tsc4", "tsc5", "tsc6", "tsc7", "tsc8", "tsc9", "tsc10", "tsc11", "tsc12", "tsc13",
-		"trial_NO", "trial_block", "trial_type", "nudging_direction", "stim", "stim_L", "stim_R", "health_L","taste_L","health_R","taste_R", "choice", "direction",
+		"trial_NO", "trial_block", "trial_type",
+		#"nudging_direction",
+		"recommendation",
+		"stim", "stim_L", "stim_R", "health_L","taste_L","health_R","taste_R", "choice", "direction",
 		"AUC", "MD", "y_MD", "commitment", "min_distance", "max_velocity", "max_acceleration", "x_flip", "distance_x", "y_flip", "distance_y", "RT", "drag_time", "hold_time", "angle", "IMA",
 		"coor_x", "coor_y", "coor_x_ab", "coor_y_ab", "coor_x_ab_direction", "coor_y_ab_direction", "AUC2", "MD2", "y_MD2", "commitment2", "min_distance2", "max_velocity2", "max_acceleration2", "x_flip2", "distance_x2", "y_flip2", "distance_y2",
 		"drag_time2", "hold_time2", "angle2", "IMA2", "coor_x2", "coor_y2", "coor_x_ab2", "coor_y_ab2", "coor_x_ab_direction2", "coor_y_ab_direction2", "events"]) 
@@ -310,171 +313,188 @@ f.writerow(["ppn", "condition", "age", "gender", "length", "weight", "hand", "di
 ## load data
 os.chdir(par_path)
 
-for folder in os.listdir(par_path): 
+for folder in os.listdir(par_path): # go through participants/folders, folder = pXX (ex. p01)
 	print(folder) # folder = participant
 	os.chdir(par_path + folder)
 
-	if os.path.isdir(par_path + folder + '\\plots\\') == False:
+	if os.path.isdir(par_path + folder + '\\plots\\') == False: # make plot folder if none
 		os.makedirs(par_path + folder + '\\plots\\')
 
-	with open(folder+"_rating.json") as json_data:
+	with open(folder+"_rating.json") as json_data: # Rating
 		df_rating = json.load(json_data)
 
-	with open(folder+"_choice_up.json") as json_data:
+	with open(folder+"_survey.json") as json_data: # Survey
+		df_survey = json.load(json_data)
+
+
+	with open(folder+"_choice_up.json") as json_data: # Base
 		df_choice_base = json.load(json_data)
 		
-	with open(folder+"_choice_up_A.json") as json_data:
+	with open(folder+"_choice_up_B.json") as json_data: # Text
 		df_choice_text = json.load(json_data)
 
-	with open(folder+"_choice_up_B.json") as json_data:
+	with open(folder+"_choice_up_A.json") as json_data: # Cursor
 		df_choice_cursor = json.load(json_data)
 
-	with open(folder+"_survey.json") as json_data:
-		df_survey = json.load(json_data)
-		
-	df_choice = dict(df_choice_base, **df_choice_text) # some variables in mouse session are overrided by the same variables in touch session
-	print(df_choice)
+	# dict creates dictionary
+	df_choice = dict(df_choice_base, **df_choice_text) # some variables in mouse session are overrided by the same variables in touch session (logout, login, instruction and practice?)
+	df_choice = dict(df_choice_base, **df_choice_cursor)
+	#print(df_choice)
 	
+
 	condition = 0 # UPDATE
 
 	## extract MT parameters based on the event-tracking
 	for i in df_choice.keys():
 
-		if i.find("trial_") != -1: # check if trial
-			d = df_choice[i]
-			trial_no = int(i[i.rfind("_")+1:]) # get trial number after "trial_"
-			trial_block = i[i.find("_")+1:i.rfind("_")] 
+		if not i.find("trial_") != -1: # if no trial go back and continue loop, filters for practice, instruction, logout and login
+			continue
 
-			# convert to seconds
-			if d["time2"] != []: # check if data
-				for k in range(len(d["time2"])):
-					d["time2"][k] = get_second(d["time2"][k])
+		# Then i = trial_Baseline/Cursor/Text_XX (ex. trial_Baseline_47)
 
-			# dragging time
-			if d["time"] != []: # check if data
-				d["drag_time"] = d['time'][-1] - d['time'][0]
-				d["hold_time"] = d["time"][1] - d["time"][0]
-				d["drag_time2"] = d["time2"][-1] - d["time2"][0]
+		d = df_choice[i] # d is 1 trial, also make d if it does not exist
+		trial_no = int(i[i.rfind("_")+1:]) # get trial number after "trial_"
 
-				for k in range(1, len(d["coor2"])):
-					if d["coor2"][k][0] != d["coor2"][k-1][0] or d["coor2"][k][1] != d["coor2"][k-1][1]:
-						break
+		# if d["time2"] != []: # check if time2
+		for k in range(len(d["time2"])):
+			d["time2"][k] = get_second(d["time2"][k])  # convert to seconds
 
-				d["hold_time2"] = d["time2"][k] - d["time2"][0]
-			else:
-				d["drag_time"] = -1
-				d["hold_time"] = -1
-				d["drag_time2"] = -1
-				d["hold_time2"] = -1
 
-			# RT (time between screens)
-			if d["leave_time"] != "": # check if data
-				if trial_no != 0:
-					d["RT"] = get_second(d["leave_time"]) - get_second(df_choice[i[0:i.rfind("_")+1]+str(trial_no-1)]["leave_time"])
-				else:
-					if i.find("mouse") != -1:
-						d["RT"] = get_second(d["leave_time"]) - get_second(df_choice_mouse["instruction_trial"]["leave_time"])
-					else:
-						d["RT"] = get_second(d["leave_time"]) - get_second(df_choice_touch["instruction_trial"]["leave_time"])
-			else:
-				d["RT"] = -1
+		# RT (time between screens)
+		#if d["leave_time"] != "": # check if leave time
+		# if trial_no != 0:
+		
+		d["RT"] = get_second(d["leave_time"]) - get_second(df_choice[i[0:i.rfind("_")+1]+str(trial_no)]["leave_time"])
 
-			# run the get_parameters function to extract parameters based on both tracking methods
-			d["coor_x"] = []
-			d["coor_y"] = []
-			d["coor_x_ab"] = []
-			d["coor_y_ab"] = []
-			d["coor_x_ab_direction"] = []
-			d["coor_y_ab_direction"] = []
-			d["coor_x2"] = []
-			d["coor_y2"] = []
-			d["coor_x_ab2"] = []
-			d["coor_y_ab2"] = []
-			d["coor_x_ab_direction2"] = []
-			d["coor_y_ab_direction2"] = []
-			get_parameters(m="")
-			get_parameters(m="2")	
+		# else: # for instruction trials
+		# 	if i.find("mouse") != -1:
+		# 		d["RT"] = get_second(d["leave_time"]) - get_second(df_choice_mouse["instruction_trial"]["leave_time"])
+		# 	else:
+		# 		d["RT"] = get_second(d["leave_time"]) - get_second(df_choice_touch["instruction_trial"]["leave_time"])
+		#else:
+		#	d["RT"] = -1
 
-			## additional variables
-			# choice direction
-			if d["resp"] != "": # check if data
-				if d["resp"] == d["stim"][0]:
-					d["direction"] = "Left"
-				else:
-					d["direction"] = "Right"
-			else:
-				d["direction"] = ""
+		# run the get_parameters function to extract parameters based on both tracking methods
+		d["coor_x"] = []
+		d["coor_y"] = []
+		d["coor_x_ab"] = []
+		d["coor_y_ab"] = []
+		d["coor_x_ab_direction"] = []
+		d["coor_y_ab_direction"] = []
+		d["coor_x2"] = []
+		d["coor_y2"] = []
+		d["coor_x_ab2"] = []
+		d["coor_y_ab2"] = []
+		d["coor_x_ab_direction2"] = []
+		d["coor_y_ab_direction2"] = []
+		get_parameters(m="")
+		get_parameters(m="2")	
 
+		## additional variables
+		# choice direction
+		# if d["resp"] != "": # check if response
+		if d["resp"] == d["stim"][0]: # if food number == left food number
+			d["direction"] = "Left"
+		else:
+			d["direction"] = "Right"
+		#else:
+		#	d["direction"] = ""
+		
+		if "recommendation" in d:
 			# recode nudging direction
-			if d["nudgeDirection"] == 1:
-				d["nudgeDirection"] = "Left"
-			elif d["nudgeDirection"] == 2:
-				d["nudgeDirection"] = "Right"
+			if d["recommendation"] == 0:
+				d["recommendation"] = "Left"
+			elif d["recommendation"] == 1:
+				d["recommendation"] = "Right"
+		else:
+			d["recommendation"] = ""
+
+		# other choice variables
+		d["taste_L"] = -1
+		d["health_L"] = -1
+		d["taste_R"]  = -1
+		d["health_R"] = -1
+		if d["stim"] != "":
+			index_L = d["stim"][0]
+			index_R = d["stim"][1]
+			if index_L != "f":
+				d["stim_L"] = food_list[int(index_L)]
 			else:
-				d["nudgeDirection"] = ""
-
-			# other choice variables
-			d["taste_L"] = -1
-			d["health_L"] = -1
-			d["taste_R"]  = -1
-			d["health_R"] = -1
-			if d["stim"] != "":
-				index_L = d["stim"][0]
-				index_R = d["stim"][1]
-				if index_L != "f":
-					d["stim_L"] = food_list[int(index_L)]
-				else:
-					d["stim_L"] = "Filler"
-				if index_R != "f":
-					d["stim_R"] = food_list[int(index_R)]
-				else:
-					d["stim_L"] = "Filler"
-				if d["direction"] == "Left":
-					d["choice"] = d["stim_L"]
-				else:
-					d["choice"] = d["stim_R"]
-
-				# ratings
-				for j in df_rating.keys():
-					if j.find("rating") != -1:
-						e = df_rating[j]
-						if e["stim"] == str(index_L):
-							d["taste_L"] = int(e["ratingT"])
-							d["health_L"] = int(e["ratingH"])
-						if e["stim"] == str(index_R):
-							d["taste_R"] = int(e["ratingT"])
-							d["health_R"] = int(e["ratingH"])
+				d["stim_L"] = "Filler"
+			if index_R != "f":
+				d["stim_R"] = food_list[int(index_R)]
 			else:
-				d["stim_L"] = ""
-				d["stim_R"] = ""
-				d["choice"] = ""
+				d["stim_L"] = "Filler"
+			if d["direction"] == "Left":
+				d["choice"] = d["stim_L"]
+			else:
+				d["choice"] = d["stim_R"]
 
-			## write data
-			f.writerow([folder, condition, df_survey["survey1"]["age"], df_survey["survey1"]["gender"], df_survey["survey1"]["length"], df_survey["survey1"]["weight"], df_survey["survey1"]["hand"], 
-				df_survey["survey2"]["diet"], df_survey["survey2"]["dietText"], df_survey["survey2"]["allergies"], df_survey["survey2"]["allergiesText"], 
-				df_survey["survey3"]["health"], df_survey["survey3"]["hunger"], df_survey["survey3"]["vegan"], 
-				df_survey["tsc1"]["Q1"], df_survey["tsc1"]["Q2"], df_survey["tsc1"]["Q3"], df_survey["tsc1"]["Q4"], 
-				df_survey["tsc2"]["Q1"], df_survey["tsc2"]["Q2"], df_survey["tsc2"]["Q3"], df_survey["tsc2"]["Q4"], 
-				df_survey["tsc3"]["Q1"], df_survey["tsc3"]["Q2"], df_survey["tsc3"]["Q3"], df_survey["tsc3"]["Q4"], 
-				df_survey["tsc4"]["Q1"],
-				trial_no, trial_block, 
-				d["nudge"], d["nudgeDirection"], d["stim"], d["stim_L"], d["stim_R"], d["health_L"], d["taste_L"], d["health_R"], d["taste_R"], d["choice"], d["direction"],
-				d["AUC"], d["MD"], d["y_MD"], d["commitment"], d["min_distance"], d["max_velocity"], d["max_acceleration"], d["x_flip"], d["distance_x"], d["y_flip"], d["distance_y"], d["RT"], d["drag_time"], d["hold_time"], d["angle"], d["IMA"],
-				d["coor_x"], d["coor_y"], d["coor_x_ab"], d["coor_y_ab"], d["coor_x_ab_direction"], d["coor_y_ab_direction"], d["AUC2"], d["MD2"], d["y_MD2"], d["commitment2"], d["min_distance2"], d["max_velocity2"], d["max_acceleration2"], d["x_flip2"], d["distance_x2"], d["y_flip2"],
-				d["distance_y2"], d["drag_time2"], d["hold_time2"], d["angle2"], d["IMA2"], d["coor_x2"], d["coor_y2"], d["coor_x_ab2"], d["coor_y_ab2"], d["coor_x_ab_direction2"], d["coor_y_ab_direction2"], d["events"]]) 
+			# ratings
+			for j in df_rating.keys():
+				if j.find("rating") != -1:
+					e = df_rating[j]
+					if e["stim"] == str(index_L):
+						d["taste_L"] = int(e["ratingT"])
+						d["health_L"] = int(e["ratingH"])
+					if e["stim"] == str(index_R):
+						d["taste_R"] = int(e["ratingT"])
+						d["health_R"] = int(e["ratingH"])
+		else:
+			d["stim_L"] = ""
+			d["stim_R"] = ""
+			d["choice"] = ""
 
-			## make the plots
-			plt.scatter(d['coor_x'], d['coor_y'], color="b")
-			plt.scatter(d['coor_x_ab'], d['coor_y_ab'], color='r')
-			plt.scatter(d['coor_x2'], d['coor_y2'], color="b", marker='+')
-			plt.scatter(d['coor_x_ab2'], d['coor_y_ab2'], color='r', marker='+')
+		
+		trial_block = i[i.find("_")+1:i.rfind("_")] 
 
-			plt.text(0.7, 0.15, s='AUC = '+str(round(d["AUC"], 2))+"/"+str(round(d["AUC2"], 2)))
-			plt.text(0.7, 0.1, s='MD = '+str(round(d["MD"], 2))+"/"+str(round(d["MD2"], 2)))
-			plt.text(0.7, 0.05, s='x-flip = '+str(round(d["x_flip"], 1))+"/"+str(round(d["x_flip2"], 1)))
-			plt.text(0.7, 0, s='drag_time = '+str(round(d["drag_time"], 2))+"/"+str(round(d["drag_time2"], 2)))
-			plt.text(0.7, -0.05, s='commitment = '+str(round(d["commitment"], 1))+"/"+str(round(d["commitment2"], 1)))
-			plt.text(0.7, -0.1, s='min_distance = '+str(round(d["min_distance"], 2))+"/"+str(round(d["min_distance2"], 2)))
+		# dragging time
+		#if d["time"] != []: # check if time
+		d["drag_time"] = d['time'][-1] - d['time'][0]
+		d["hold_time"] = d["time"][1] - d["time"][0]
+		d["drag_time2"] = d["time2"][-1] - d["time2"][0]
 
-			plt.savefig(par_path + folder + '\\plots\\' + i +".png")
-			plt.close()
+		for k in range(1, len(d["coor2"])):
+			if d["coor2"][k][0] != d["coor2"][k-1][0] or d["coor2"][k][1] != d["coor2"][k-1][1]:
+				break
+
+		d["hold_time2"] = d["time2"][k] - d["time2"][0]
+
+		# else:
+		# 	d["drag_time"] = -1
+		# 	d["hold_time"] = -1
+		# 	d["drag_time2"] = -1
+		# 	d["hold_time2"] = -1
+
+		## write data
+		f.writerow([folder, condition, df_survey["survey1"]["age"], df_survey["survey1"]["gender"], df_survey["survey1"]["length"], df_survey["survey1"]["weight"], df_survey["survey1"]["hand"], 
+			df_survey["survey2"]["diet"], df_survey["survey2"]["dietText"], df_survey["survey2"]["allergies"], df_survey["survey2"]["allergiesText"], 
+			df_survey["survey3"]["health"], df_survey["survey3"]["hunger"], df_survey["survey3"]["vegan"], 
+			df_survey["tsc1"]["Q1"], df_survey["tsc1"]["Q2"], df_survey["tsc1"]["Q3"], df_survey["tsc1"]["Q4"], 
+			df_survey["tsc2"]["Q1"], df_survey["tsc2"]["Q2"], df_survey["tsc2"]["Q3"], df_survey["tsc2"]["Q4"], 
+			df_survey["tsc3"]["Q1"], df_survey["tsc3"]["Q2"], df_survey["tsc3"]["Q3"], df_survey["tsc3"]["Q4"], 
+			df_survey["tsc4"]["Q1"],
+			trial_no, trial_block, 
+			#d["nudge"], d["nudgeDirection"], 
+			d["recommendation"],
+			d["stim"], d["stim_L"], d["stim_R"], d["health_L"], d["taste_L"], d["health_R"], d["taste_R"], d["choice"], d["direction"],
+			d["AUC"], d["MD"], d["y_MD"], d["commitment"], d["min_distance"], d["max_velocity"], d["max_acceleration"], d["x_flip"], d["distance_x"], d["y_flip"], d["distance_y"], d["RT"], d["drag_time"], d["hold_time"], d["angle"], d["IMA"],
+			d["coor_x"], d["coor_y"], d["coor_x_ab"], d["coor_y_ab"], d["coor_x_ab_direction"], d["coor_y_ab_direction"], d["AUC2"], d["MD2"], d["y_MD2"], d["commitment2"], d["min_distance2"], d["max_velocity2"], d["max_acceleration2"], d["x_flip2"], d["distance_x2"], d["y_flip2"],
+			d["distance_y2"], d["drag_time2"], d["hold_time2"], d["angle2"], d["IMA2"], d["coor_x2"], d["coor_y2"], d["coor_x_ab2"], d["coor_y_ab2"], d["coor_x_ab_direction2"], d["coor_y_ab_direction2"], d["events"]]) 
+
+
+		## make the plots
+		plt.scatter(d['coor_x'], d['coor_y'], color="b")
+		plt.scatter(d['coor_x_ab'], d['coor_y_ab'], color='r')
+		plt.scatter(d['coor_x2'], d['coor_y2'], color="b", marker='+')
+		plt.scatter(d['coor_x_ab2'], d['coor_y_ab2'], color='r', marker='+')
+
+		plt.text(0.7, 0.15, s='AUC = '+str(round(d["AUC"], 2))+"/"+str(round(d["AUC2"], 2)))
+		plt.text(0.7, 0.1, s='MD = '+str(round(d["MD"], 2))+"/"+str(round(d["MD2"], 2)))
+		plt.text(0.7, 0.05, s='x-flip = '+str(round(d["x_flip"], 1))+"/"+str(round(d["x_flip2"], 1)))
+		plt.text(0.7, 0, s='drag_time = '+str(round(d["drag_time"], 2))+"/"+str(round(d["drag_time2"], 2)))
+		plt.text(0.7, -0.05, s='commitment = '+str(round(d["commitment"], 1))+"/"+str(round(d["commitment2"], 1)))
+		plt.text(0.7, -0.1, s='min_distance = '+str(round(d["min_distance"], 2))+"/"+str(round(d["min_distance2"], 2)))
+
+		plt.savefig(par_path + folder + '\\plots\\' + i +".png")
+		plt.close()
