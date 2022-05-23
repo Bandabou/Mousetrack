@@ -309,7 +309,7 @@ f = csv.writer(open(abs_path + "data_merged.csv", "w"), delimiter=";")
 
 f.writerow(["ppn", "condition", "age", "gender", "length", "weight", "hand", "diet", "diet_text", "allergies", "allergies_text", "goal_health", "hunger", "vegan",
 		"tsc1", "tsc2", "tsc3", "tsc4", "tsc5", "tsc6", "tsc7", "tsc8", "tsc9", "tsc10", "tsc11", "tsc12", "tsc13",
-		"trial_NO", "trial_block", "trial_type",
+		"trial_NO", "trial_block",
 		#"nudging_direction",
 		"recommendation",
 		"stim", "stim_L", "stim_R", "health_L","taste_L","health_R","taste_R", "choice", "direction",
