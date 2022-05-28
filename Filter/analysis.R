@@ -7,14 +7,14 @@ setwd("C:\\Users\\bouke\\Documents\\GitHub\\DataAnalysis")
 df <- read.csv("data_merged.csv", sep=";", dec=".", header=TRUE, stringsAsFactors = FALSE)
 
 ## recode some variables and missing values
-df$condition <- factor(df$condition)
-df$hand[which(df$hand==0)] <- "left"
-df$hand[which(df$hand==1)] <- "right"
-df$hand[which(df$hand==2)] <- "both"
-df$hand <- factor(df$hand)
-df$gender[which(df$gender==0)] <- "male"
+#df$condition <- factor(df$condition)
+#df$hand[which(df$hand==0)] <- "left"
+#df$hand[which(df$hand==1)] <- "right"
+#df$hand[which(df$hand==2)] <- "both"
+#df$hand <- factor(df$hand)
+df$gender[which(df$gender==0)] <- "male" #WHICH? https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/which
 df$gender[which(df$gender==1)] <- "female"
-df$gender <- factor(df$gender)
+df$gender <- factor(df$gender) #FACTOR? https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/factor
 df$diet[which(df$diet==0)] <- "no"
 df$diet[which(df$diet==1)] <- "yes"
 df$diet <- factor(df$diet)
@@ -24,26 +24,26 @@ df$allergies <- factor(df$allergies)
 df$vegan[which(df$vegan==0)] <- "yes"
 df$vegan[which(df$vegan==1)] <- "no"
 df$vegan <- factor(df$vegan)
-for (i in c(2, 3, 4, 5, 6, 7, 8, 10, 11)) {
+for (i in c(2, 3, 4, 5, 6, 7, 8, 10, 11)) { #???
   df[[paste0("tsc", as.character(i))]] <- 8 - df[[paste0("tsc", as.character(i))]]
 }
 df$tsc <- apply(data.frame(df$tsc1, df$tsc2, df$tsc3, df$tsc4, df$tsc5, df$tsc6, df$tsc7, df$tsc8, df$tsc9, df$tsc10, df$tsc11, df$tsc12, df$tsc13), 1, mean)
 df$trial_block <- factor(df$trial_block, exclude = "")
-df$trial_type <- factor(df$trial_type, exclude= "")
+df$trial_type <- factor(df$trial_type, exclude= "") #???
 df$nudging_direction <- factor(df$nudging_direction, exclude= "")
 
 var_string <- c("stim", "stim_L", "stim_R", "events", "distance_x", "distance_y", "angle", "IMA", "coor_x", "coor_y", "coor_x_ab", "coor_y_ab", "coor_x_ab_direction", "coor_y_ab_direction", "distance_x2", "distance_y2", "coor_x2", "coor_y2", "coor_x_ab2", "coor_y_ab2", "coor_x_ab_direction2", "coor_y_ab_direction2", "angle2", "IMA2")
 var_minus <- c("health_L", "health_R", "taste_L", "taste_R", "RT", "AUC", "MD", "y_MD", "commitment", "min_distance", "max_velocity", "max_acceleration", "x_flip", "y_flip",
                "drag_time", "hold_time", "AUC2", "MD2", "y_MD2", "commitment", "min_distance", "max_velocity2", "max_acceleration2", "x_flip2", "y_flip2", "drag_time2", "hold_time2")
 for (var in var_string) {
-  df[[var]][which(df[[var]]=="[]")] <- NA
+  df[[var]][which(df[[var]]=="[]")] <- NA #NA? https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/NA
 }
 for (var in var_minus) {
   df[[var]][which(df[[var]]==-1)] <- NA
 }
 
 ## process the string data
-breakString <- function(s) {
+breakString <- function(s) { # like python function https://www.tutorialspoint.com/r/r_functions.htm
   if (is.na(s)==FALSE) {
     s2 <- str_sub(s, 2, (str_length(s)-1))
     #print(s2)
@@ -69,8 +69,8 @@ for (i in 1:nrow(df)) {
   }
 }
 
-df$release <- rep(NA, nrow(df))
-df$few <- rep(NA, nrow(df))
+df$release <- rep(NA, nrow(df)) #REP? https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/rep
+df$few <- rep(NA, nrow(df)) #NROW? https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/nrow
 for (i in 1:nrow(df)) {
   if (is.na(df$events[i])==FALSE) {
     df$release[i] <- 0
