@@ -299,6 +299,7 @@ mod_choice_control <- glmer(choice2~1+taste_dif+health_dif+(0+taste_dif+health_d
 mod_choice_health <- glmer(choice2~1+taste_dif+health_dif+(0+taste_dif+health_dif|ppn), df2[which(df2$trial_type=="health"),], family=binomial)
 mod_choice_taste <- glmer(choice2~1+taste_dif+health_dif+(0+taste_dif+health_dif|ppn), df2[which(df2$trial_type=="taste"),], family=binomial)
 # same pattern, and no effects of nudging it seems
+#summary mod_choice
 
 # fit models for each participant to get individual model fit
 df3 <- df2
@@ -383,6 +384,7 @@ for (var in new_var) {
   df4[[var]] <- rep(NA, nrow(df4))
 }
 
+##MARKK
 for (i in 1:nrow(df4)) {
   df4$utility_L3[i] <- df4$health_L[i] * df4$weight_health[i] + df4$taste_L[i] * df4$weight_taste[i]
   df4$utility_R3[i] <- df4$health_R[i] * df4$weight_health[i] + df4$taste_R[i] * df4$weight_taste[i]
