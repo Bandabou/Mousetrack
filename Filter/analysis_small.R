@@ -89,6 +89,35 @@ for (i in 1:nrow(df4)) {
   }  
 }
 
+
+## categorize trials
+df4$trade_off <- df4$health_dif * df4$taste_dif
+df4$trial_type1 <- rep(NA, nrow(df4))
+# categorization using attributes without weights from the model
+for (i in 1:nrow(df4)) {
+  if (df4$trade_off[i] >= 0) {
+    if (df4$utility_dif1[i] >= 5) {
+      if (is.na(df4$opt_stronger1[i])==FALSE) {
+        if (df4$direction[i] == df4$opt_stronger1[i]) {
+          df4$trial_type1[i] <- "dominate"
+        }
+      } else {
+        df4$trial_type1[i] <- "dominate"
+      }
+    } else if (df4$utility_dif1[i] <= 1) {
+      df4$trial_type1[i] <- "similar"
+    }
+  } else {
+    if (df4$utility_dif1[i] <= 1) {
+      if (df4$trade_off_health1[i] >= 2 && df4$trade_off_taste1[i] >= 2) {
+        df4$trial_type1[i] <- "trade-off"
+      } else {
+        df4$trial_type1[i] <- "similar"
+      }
+    }
+  }
+}
+  
 theme_set(theme_bw())
 df4_1 <- df4[which(is.na(df4$trial_type1)==FALSE),]
 ggplot(df4_1, aes(x=health_dif, y=taste_dif, group=trial_type1, color=trial_type1)) + geom_point(size=3, alpha=0.3) + geom_jitter() +
