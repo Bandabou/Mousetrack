@@ -1,16 +1,66 @@
+### load libraries
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load("ggplot2", "reshape2", "lme4", "lmerTest", "psych", "piecewiseSEM", "stringr", "brms", "DescTools", "mlr", "plyr")
+
+### load data
+setwd("C:\\Users\\bouke\\Documents\\GitHub\\DataAnalysis")
+df <- read.csv("data_merged.csv", sep=";", dec=".", header=TRUE, stringsAsFactors = FALSE)
+
+## compute additional variabbles
+new_var <- c("choice2", "health_dif", "taste_dif")
+#df <- df[which(df$trial_type != "filler"),]
+
+for (var in new_var) {
+  df[[var]] <- rep(NA, nrow(df))
+}
+for (i in 1:nrow(df)) {
+  if (df$direction[i] == "Left") {
+    df$choice2[i] <- 1
+  } else if (df$direction[i] == "Right") {
+    df$choice2[i] <- 0
+  }
+  if (df$ppn[i] != "p44" && is.na(df$health_L[i])==FALSE) {
+    df$health_dif[i] <- df$health_L[i] - df$health_R[i]
+    df$taste_dif[i] <- df$taste_L[i] - df$taste_R[i]
+  }
+}
+
 ### effects of trial types on the parameters
-df <- df[which(df$ppn!="p44"),]
 df2 <- df
+#df <- df[which(df$ppn!="p44"),]
+
 ## build the multilevel logistic regression model of actual choice
 # fit the model
 df2$choice2 <- factor(df2$choice2)
-mod_choice <- glmer(choice2~1+taste_dif+health_dif+(0+taste_dif+health_dif|ppn), df2, family=binomial)
-mod_choice_control <- glmer(choice2~1+taste_dif+health_dif+(0+taste_dif+health_dif|ppn), df2[which(df2$trial_type=="control"),], family=binomial)
-mod_choice_health <- glmer(choice2~1+taste_dif+health_dif+(0+taste_dif+health_dif|ppn), df2[which(df2$trial_type=="health"),], family=binomial)
-mod_choice_taste <- glmer(choice2~1+taste_dif+health_dif+(0+taste_dif+health_dif|ppn), df2[which(df2$trial_type=="taste"),], family=binomial)
+#df2$ppn <- factor(df2$ppn)
+
+for (i in 1:nrow(df)) {
+  if (is.na(df$ppn[i])) {
+    print('Missing')
+  }
+}
+
+x <- choice2~1+taste_dif+health_dif+(0+taste_dif+health_dif|ppn)
+mod_choice <- glmer(x, df2, family=binomial)
+#mod_choice_control <- glmer(x, df2[which(df2$trial_type=="control"),], family=binomial)
+#mod_choice_health <- glmer(x, df2[which(df2$trial_type=="health"),], family=binomial)
+#mod_choice_taste <- glmer(x, df2[which(df2$trial_type=="taste"),], family=binomial)
 # same pattern, and no effects of nudging it seems
 #summary mod_choice
 
+
+# fit models for each participant to get individual model fit
+df3 <- df2
+df3$fit <- rep(NA, nrow(df3))
+for (i in unique(df3$ppn)) {
+  data_current <- df3[which(df3$ppn==i),]
+  fit <- glm(choice2~1+taste_dif+health_dif, data_current, family=binomial)
+  df3$fit[which(df3$ppn==i)] <- rsquared(fit)[5][[1]]
+}
+df4 <- df3[which(df3$fit >= 0.1),] # no one with fit less than 10%, so people seemed to be a bit more careful
+
+# fit the final model
+mod_choice2 <- glmer(choice2~1+taste_dif+health_dif+(0+taste_dif+health_dif|ppn), df4, family=binomial)
 
 weight_taste_ave <- fixef(mod_choice2)[2][[1]]
 weight_health_ave <- fixef(mod_choice2)[3][[1]]
@@ -38,3 +88,11 @@ for (i in 1:nrow(df4)) {
     df4$opt_stronger1[i] <- "Right"
   }  
 }
+
+theme_set(theme_bw())
+df4_1 <- df4[which(is.na(df4$trial_type1)==FALSE),]
+ggplot(df4_1, aes(x=health_dif, y=taste_dif, group=trial_type1, color=trial_type1)) + geom_point(size=3, alpha=0.3) + geom_jitter() +
+  theme(axis.title=element_text(size=15)) +
+  theme(legend.text=element_text(size=14)) +
+  theme(legend.title=element_text(size=14)) + xlab("health difference") + ylab("taste difference")
+

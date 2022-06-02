@@ -4,7 +4,7 @@ pacman::p_load("ggplot2", "reshape2", "lme4", "lmerTest", "psych", "piecewiseSEM
 
 ### load data
 setwd("C:\\Users\\bouke\\Documents\\GitHub\\DataAnalysis")
-df <- read.csv("data_merged.csv", sep=";", dec=".", header=TRUE, stringsAsFactors = FALSE)
+df <- read.csv("data_relevant_vars.csv", sep=";", dec=".", header=TRUE, stringsAsFactors = FALSE)
 
 ## recode some variables and missing values
 #df$condition <- factor(df$condition)
