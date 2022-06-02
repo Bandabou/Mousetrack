@@ -125,3 +125,4 @@ ggplot(df4_1, aes(x=health_dif, y=taste_dif, group=trial_type1, color=trial_type
   theme(legend.text=element_text(size=14)) +
   theme(legend.title=element_text(size=14)) + xlab("health difference") + ylab("taste difference")
 
+write.csv(df4,"C:\Users\bouke\Documents\GitHub\DataAnalysis\utility.csv", row.names = FALSE)
