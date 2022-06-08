@@ -1,10 +1,15 @@
+# Sampled from "analysis.R" by Chao
+# Written by Bouke
+# Has some redundant lines, which are left in for compatibility
+
+
 ### load libraries
 if (!require("pacman")) install.packages("pacman")
 pacman::p_load("ggplot2", "reshape2", "lme4", "lmerTest", "psych", "piecewiseSEM", "stringr", "brms", "DescTools", "mlr", "plyr")
 
 ### load data
 setwd("C:\\Users\\bouke\\Documents\\GitHub\\DataAnalysis")
-df <- read.csv("data_merged.csv", sep=";", dec=".", header=TRUE, stringsAsFactors = FALSE)
+df <- read.csv("data merged FINAL.csv", sep=",", dec=".", header=TRUE, stringsAsFactors = FALSE)
 
 ## compute additional variabbles
 new_var <- c("choice2", "health_dif", "taste_dif")
@@ -125,4 +130,14 @@ ggplot(df4_1, aes(x=health_dif, y=taste_dif, group=trial_type1, color=trial_type
   theme(legend.text=element_text(size=14)) +
   theme(legend.title=element_text(size=14)) + xlab("health difference") + ylab("taste difference")
 
-write.csv(df4,"C:\Users\bouke\Documents\GitHub\DataAnalysis\utility.csv", row.names = FALSE)
+# same but with absolute difference
+theme_set(theme_bw())
+df4_1 <- df4[which(is.na(df4$trial_type1)==FALSE),]
+ggplot(df4_1, aes(x=abs(health_dif), y=abs(taste_dif), group=trial_type1, color=trial_type1)) + geom_point(size=3, alpha=0.3) + geom_jitter() +
+  theme(axis.title=element_text(size=15)) +
+  theme(legend.text=element_text(size=14)) +
+  theme(legend.title=element_text(size=14)) + xlab("health difference") + ylab("taste difference")
+
+write.csv(df4$utility_dif1,"C:\\Users\\bouke\\Documents\\GitHub\\DataAnalysis\\utility_dif1.csv", row.names = FALSE)
+write.csv(df4,"C:\\Users\\bouke\\Documents\\GitHub\\DataAnalysis\\utility.csv", row.names = FALSE)
+
