@@ -244,10 +244,10 @@ class DragObj2(DragBehavior, Cursor):
 		self.recommendation = random.randint(0,1) #0=left, 1=right
 		
 		if self.recommendation == 1:
-			self.pos = (Window.width/7-self.width/2), (Window.height/8-self.height/2), #(true is right)
+			self.pos = (Window.width/7-self.width/2), (Window.height/8-self.height/2), #(true is left)
 			
 		else:
-			self.pos = (Window.width/1.18-self.width/2), (Window.height/8-self.height/2)  #false is left
+			self.pos = (Window.width/1.18-self.width/2), (Window.height/8-self.height/2)  #false is right
 
 		# time of points on dragging trajectory 
 		self.timestamp = []
